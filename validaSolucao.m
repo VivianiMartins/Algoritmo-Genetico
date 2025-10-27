@@ -4,11 +4,14 @@ function flagValidoOuNao = validaSolucao(individuo)
 
   flagValidoOuNao = 1;  % Inicializa como válido
 
-  %% Verifica se não trabalha mais de um dia seguido
   flagTrabalhaDiaAnterior = 0;
   for contDia = 1:length(individuo)
-    flagTrabalhaDiaAtual = individuo(contDia);
 
+    flagTrabalhaDiaAtual = individuo(contDia);
+    %% Verifica se está de férias
+
+
+    % Verifica se não trabalha mais de um dia seguido
     if flagTrabalhaDiaAtual == 1 && flagTrabalhaDiaAnterior == 1
       flagValidoOuNao = 0;
       return;

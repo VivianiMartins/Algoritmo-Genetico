@@ -11,7 +11,7 @@ function funcaoPrincipal_AG()
   listaFuncionarios = listaFuncionarios(2:end,:,:,:);
 
   % terei duas matrizes de funcionarios por turno:
-  [funcDiurnos, funcNoturnos] = transformarListaFuncionarios(listaFuncionarios);
+  [funcDiurnos, funcNoturnos, numDiasMes] = transformarListaFuncionarios(listaFuncionarios);
   tempoDecorrido = toc(tempoInicio);
 
   fprintf('\n========== RELATÓRIO DE FUNCIONÁRIOS ==========\n');
@@ -21,17 +21,23 @@ function funcaoPrincipal_AG()
   fprintf('==============================================\n\n');
 
   %%%% Parâmetros %%%%
-  qtdeIndividuos = 50;
-  % dias do mês da escala, 28,30 ou 31
-  qtdeDiasDoMes = 30;
+  qtdeIndividuos = 5;
 
   % Gerando as populações iniciais de cada turno separadamente:
-  populacaoDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, qtdeDiasDoMes);
+  populacaoDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, numDiasMes);
+
+  % Pega o indivíduo 5 completo (toda a escala)
+  individuo5 = populacaoDiurna(5, :, :);  % matriz [funcionários x dias]
+
+  % Pega a escala do funcionário de férias no individuo 6
+  escalaFunc14 = populacaoDiurna(5, 14, :);  % vetor [1 x dias]
+
   % RESULTADO
+  keyboard
   tempoTotal = toc(tempoInicio); % Tempo total de execução
   fprintf('Dimensões da população: %d x %d x %d\n', size(populacaoDiurna, 1), size(populacaoDiurna, 2), size(populacaoDiurna, 3));
   fprintf('Tempo Total: %.2f segundos (%.2f minutos)\n', tempoTotal, tempoTotal/60);
-  %populacaoNoturna = geraPopulacaoInicial(funcNoturnos, qtdeIndividuos, qtdeDiasDoMes);
+  %populacaoNoturna = geraPopulacaoInicial(funcNoturnos, qtdeIndividuos, numDiasMes);
 
 end
 

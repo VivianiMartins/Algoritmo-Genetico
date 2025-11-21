@@ -1,4 +1,4 @@
-function [funcionariosDiurnos, funcionariosNoturnos] = transformarListaFuncionarios(listaFuncionarios)
+function [funcionariosDiurnos, funcionariosNoturnos, numDiasMes] = transformarListaFuncionarios(listaFuncionarios)
   % Transforma a lista de funcionários em matrizes separadas por turno
   % ESTRUTURA DO CSV (SEM CABEÇALHO):
   % Coluna 1: Nome

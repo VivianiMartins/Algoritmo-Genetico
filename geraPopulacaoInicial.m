@@ -17,11 +17,11 @@ function populacao = geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, q
 
   % Inicializa a população 3D
   % Dimensões: [indivíduos, funcionários, dias]
-  populacao = zeros(qtdeIndividuos, qtdePessoasDoTurno, qtdeDiasDoMes);
+  populacao = zeros(qtdePessoasDoTurno, qtdeDiasDoMes, qtdeIndividuos);
 
   fprintf('Gerando população inicial...\n');
   fprintf('Indivíduos: %d | Funcionários: %d | Dias: %d\n', ...
-          qtdeIndividuos, qtdePessoasDoTurno, qtdeDiasDoMes);
+           qtdePessoasDoTurno, qtdeDiasDoMes, qtdeIndividuos);
 
   % Gera cada indivíduo da população
   for contIndividuo = 1:qtdeIndividuos
@@ -34,21 +34,28 @@ function populacao = geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, q
 
       % Se estiver de férias, deixa todos os dias zerados (não trabalha)
       if estaDeFerias == 1
-        continue;  % Já está zerado por padrão
+        individuo = zeros(1, qtdeDiasDoMes);  % Já está zerado por padrão
+      else
+        % Gera escala válida para este funcionário
+
+
+        prev = 0;
+        for d = 1:qtdeDiasDoMes
+          if prev == 1
+            % se trabalhou no dia anterior, hoje não pode trabalhar
+            individuo(d) = 0;
+            prev = 0;
+          else
+            % caso contrário, decide aleatoriamente (ajuste probabilidade se quiser)
+            individuo(d) = rand() > 0.5;
+            prev = individuo(d);
+          endif
+        endfor
       endif
 
-      % Gera escala válida para este funcionário
-      % Continua gerando até obter uma solução válida
-      do
-        % Gera vetor aleatório de dias trabalhados (0 ou 1)
-        % rand > 0.5 gera aproximadamente 50% de dias trabalhados
-        individuo = rand(1, qtdeDiasDoMes) > 0.5;
-
-      % Valida a solução para este funcionário
-      until ~validaSolucao(individuo)
 
       % Armazena a escala deste funcionário neste indivíduo
-      populacao(contIndividuo, contPessoa, :) = individuo;
+      populacao( contPessoa, :, contIndividuo) = individuo;
 
     endfor
 

@@ -27,13 +27,12 @@ function funcaoPrincipal_AG()
   populacaoDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, numDiasMes);
 
   % Pega o indivíduo 5 completo (toda a escala)
-  individuo5 = populacaoDiurna(5, :, :);  % matriz [funcionários x dias]
+  individuo5 = populacaoDiurna( :, :, 5);  % matriz [funcionários x dias]
 
   % Pega a escala do funcionário de férias no individuo 6
-  escalaFunc14 = populacaoDiurna(5, 14, :);  % vetor [1 x dias]
-
+  escalaFunc14 = populacaoDiurna( 14, :, 5);  % vetor [1 x dias]
+ keyboard
   % RESULTADO
-  keyboard
   tempoTotal = toc(tempoInicio); % Tempo total de execução
   fprintf('Dimensões da população: %d x %d x %d\n', size(populacaoDiurna, 1), size(populacaoDiurna, 2), size(populacaoDiurna, 3));
   fprintf('Tempo Total: %.2f segundos (%.2f minutos)\n', tempoTotal, tempoTotal/60);

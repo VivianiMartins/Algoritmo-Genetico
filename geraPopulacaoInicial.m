@@ -1,14 +1,16 @@
-function populacao = geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, qtdeDiasDoMes)
+function populacao = geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, qtdeDiasDoMes, escala, diaReescala)
   % Gera população inicial para algoritmo genético de escalas de trabalho
   %
   % Entrada:
-  %   funcionariosDoTurno: matriz com dados dos funcionários [ID, nome, turno, ferias, ...]
+  %   funcionariosDoTurno: matriz com dados dos funcionários
+  %                        [Cargo, Turno, Inicio, Fim, Dia1, Dia2, ..., DiaN]
   %   qtdeIndividuos: número de indivíduos (soluções) na população
   %   qtdeDiasDoMes: número de dias no mês
+  %   escala: 1 para escala (gera do zero), 0 para reescala (usa dias existentes)
   %
   % Saída:
-  %   populacao: matriz 3D [qtdeIndividuos x qtdeFuncionarios x qtdeDiasDoMes]
-  %              Cada fatia populacao(i,:,:) é um indivíduo (escala completa)
+  %   populacao: matriz 3D [qtdeFuncionarios x qtdeDiasDoMes x qtdeIndividuos]
+  %              Cada fatia populacao(:,:,i) é um indivíduo (escala completa)
   %              Linhas: funcionários | Colunas: dias do mês
   %              Valores: 0 (não trabalha) ou 1 (trabalha)
 
@@ -16,11 +18,11 @@ function populacao = geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, q
   qtdePessoasDoTurno = size(funcionariosDoTurno, 1);
 
   % Inicializa a população 3D
-  % Dimensões: [indivíduos, funcionários, dias]
+  % Dimensões: [funcionários, dias, indivíduos]
   populacao = zeros(qtdePessoasDoTurno, qtdeDiasDoMes, qtdeIndividuos);
 
   fprintf('Gerando população inicial...\n');
-  fprintf('Indivíduos: %d | Funcionários: %d | Dias: %d\n', ...
+  fprintf('Funcionários: %d | Dias: %d | Indivíduos: %d \n', ...
            qtdePessoasDoTurno, qtdeDiasDoMes, qtdeIndividuos);
 
   % Gera cada indivíduo da população
@@ -29,33 +31,20 @@ function populacao = geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, q
     % Para cada funcionário neste indivíduo
     for contPessoa = 1:qtdePessoasDoTurno
 
-      % Verifica se o funcionário está de férias
-      estaDeFerias = funcionariosDoTurno(contPessoa, 4);  % Coluna 4: férias
-
-      % Se estiver de férias, deixa todos os dias zerados (não trabalha)
-      if estaDeFerias == 1
-        individuo = zeros(1, qtdeDiasDoMes);  % Já está zerado por padrão
+      if escala == 1
+        % ESCALA: Gera escala inicial vazia (do zero)
+        individuo = zeros(1, qtdeDiasDoMes);
       else
-        % Gera escala válida para este funcionário
-
-
-        prev = 0;
-        for d = 1:qtdeDiasDoMes
-          if prev == 1
-            % se trabalhou no dia anterior, hoje não pode trabalhar
-            individuo(d) = 0;
-            prev = 0;
-          else
-            % caso contrário, decide aleatoriamente (ajuste probabilidade se quiser)
-            individuo(d) = rand() > 0.5;
-            prev = individuo(d);
-          endif
-        endfor
+        % REESCALA: Usa os dias já existentes do funcionário
+        % Os dias estão da posição 5 em diante em funcionariosDoTurno
+        individuo = funcionariosDoTurno(contPessoa, 5:end);
       endif
 
+      % Valida e ajusta a solução de acordo com as regras
+      individuo = validaSolucao(individuo, funcionariosDoTurno(contPessoa, :), qtdeDiasDoMes, escala);
 
       % Armazena a escala deste funcionário neste indivíduo
-      populacao( contPessoa, :, contIndividuo) = individuo;
+      populacao(contPessoa, :, contIndividuo) = individuo;
 
     endfor
 

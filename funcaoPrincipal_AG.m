@@ -22,9 +22,14 @@ function funcaoPrincipal_AG()
 
   %%%% Parâmetros %%%%
   qtdeIndividuos = 5;
+  escala = 1; %1 para escala, 0 para reescala
+  %se for escala, tem que modificar a quantidade de dias do mês para o do mês seguinte
+  numDiasMes = 31;
+  diaReescala = 0;
 
   % Gerando as populações iniciais de cada turno separadamente:
-  populacaoDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, numDiasMes);
+
+  populacaoDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, numDiasMes, escala, diaReescala);
 
   % Pega o indivíduo 5 completo (toda a escala)
   individuo5 = populacaoDiurna( :, :, 5);  % matriz [funcionários x dias]

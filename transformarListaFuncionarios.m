@@ -4,19 +4,16 @@ function [funcionariosDiurnos, funcionariosNoturnos, numDiasMes] = transformarLi
   % Coluna 1: Nome
   % Coluna 2: Cargo
   % Coluna 3: Turno
-  % Coluna 4: Férias
-  % Coluna 5: Reescal
-  % Coluna 6: Dias (quantidade de dias para reescala-que o funcionario esta de atestado/licensa)
-  % Colunas 7-36: Dias do mês (1-30)
+  % Coluna 4: Inicio (numérico)
+  % Coluna 5: Fim (numérico)
+  % Colunas 6-35: Dias do mês (1-30)
   %
   % ESTRUTURA DA MATRIZ DE SAÍDA:
-  % Coluna 1: ID do funcionário (linha original no CSV)
-  % Coluna 2: Cargo (1=Farmacêutico, 2=Auxiliar)
-  % Coluna 3: Turno (1=Diurno, 2=Noturno)
-  % Coluna 4: Férias (0=Não, 1=Sim)
-  % Coluna 5: Reescal (0=Não, 1=Sim)
-  % Coluna 6: Quantidade de dias para reescala
-  % Colunas 7-36: Dias do mês (marcação de trabalho 0 ou 1)
+  % Coluna 1: Cargo (1=Farmacêutico, 2=Auxiliar)
+  % Coluna 2: Turno (1=Diurno, 2=Noturno)
+  % Coluna 3: Inicio (0 se não existir)
+  % Coluna 4: Fim (0 se não existir)
+  % Colunas 5-34: Dias do mês (marcação de trabalho 0 ou 1)
 
   % Inicializa contadores
   contDiurnos = 0;
@@ -30,8 +27,8 @@ function [funcionariosDiurnos, funcionariosNoturnos, numDiasMes] = transformarLi
   numFuncionarios = numLinhas;
 
   % Calcula quantos dias do mês existem no arquivo (total de colunas - 5 colunas fixas)
-  numDiasMes = numColunas - 5;  % 35 - 5 = 30 dias
-  numColunasMatriz = 6 + numDiasMes;  % Tamanho da matriz de saída (6 dados + 30 dias)
+  numDiasMes = numColunas - 5;  % Total - 5 = dias do mês
+  numColunasMatriz = 4 + numDiasMes;  % Tamanho da matriz de saída (4 dados + dias)
 
   % Cria matrizes temporárias para armazenar dados de cada turno
   matrizTemp_Diurnos = zeros(numFuncionarios, numColunasMatriz);
@@ -51,58 +48,55 @@ function [funcionariosDiurnos, funcionariosNoturnos, numDiasMes] = transformarLi
     % Turno: 1 para diurno, 2 para noturno
     turno = lower(strtrim(listaFuncionarios{cont, 3}));
 
-    % Férias: 0 ou 1
-    ferias = lower(strtrim(listaFuncionarios{cont, 4}));
-    if strcmp(ferias, "sim") || strcmp(ferias, "1")
-      feriasNumerico = 1;
-    else
-      feriasNumerico = 0;
+    % Inicio (coluna 4)
+    inicio = listaFuncionarios{cont, 4};
+    if !isnumeric(inicio)
+      inicio = str2num(strtrim(inicio));
+      if isempty(inicio)
+        inicio = 0;
+      endif
     endif
 
-    % Reescal: 0 ou 1
-    reescal = lower(strtrim(listaFuncionarios{cont, 5}));
-    if strcmp(reescal, "sim") || strcmp(reescal, "1")
-      reescalNumerico = 1;
-    else
-      reescalNumerico = 0;
+    % Fim (coluna 5)
+    fim = listaFuncionarios{cont, 5};
+    if !isnumeric(fim)
+      fim = str2num(strtrim(fim));
+      if isempty(fim)
+        fim = 0;
+      endif
     endif
 
-    % Quantidade de dias para reescala (coluna 5)
-    qtdeDiasReescala = listaFuncionarios{cont, 6};
-    if !isnumeric(qtdeDiasReescala)
-      qtdeDiasReescala = str2num(strtrim(qtdeDiasReescala));
-    endif
-
-    % Converte os dias do mês (colunas 7 em diante) para numérico
+    % Converte os dias do mês (colunas 6 em diante) para numérico
     diasDoMes = zeros(1, numDiasMes);
     for d = 1:numDiasMes
       valor = listaFuncionarios{cont, 5 + d};
       if isnumeric(valor)
         diasDoMes(d) = valor;
       else
-        diasDoMes(d) = str2num(strtrim(valor));
+        valorConvertido = str2num(strtrim(valor));
+        if !isempty(valorConvertido)
+          diasDoMes(d) = valorConvertido;
+        else
+          diasDoMes(d) = 0;
+        endif
       endif
     endfor
 
     % Armazena dados na matriz correta de acordo com o turno
     if strcmp(turno, "diurno")
       contDiurnos = contDiurnos + 1;
-      matrizTemp_Diurnos(contDiurnos, 1) = cont;                  % ID
-      matrizTemp_Diurnos(contDiurnos, 2) = cargoNumerico;         % Cargo
-      matrizTemp_Diurnos(contDiurnos, 3) = 1;                     % Turno diurno
-      matrizTemp_Diurnos(contDiurnos, 4) = feriasNumerico;        % Férias
-      matrizTemp_Diurnos(contDiurnos, 5) = reescalNumerico;       % Reescal
-      matrizTemp_Diurnos(contDiurnos, 6) = qtdeDiasReescala;      % Qtde dias reescala
-      matrizTemp_Diurnos(contDiurnos, 7:end) = diasDoMes;         % Dias do mês
+      matrizTemp_Diurnos(contDiurnos, 1) = cargoNumerico;         % Cargo
+      matrizTemp_Diurnos(contDiurnos, 2) = 1;                     % Turno diurno
+      matrizTemp_Diurnos(contDiurnos, 3) = inicio;                % Inicio
+      matrizTemp_Diurnos(contDiurnos, 4) = fim;                   % Fim
+      matrizTemp_Diurnos(contDiurnos, 5:end) = diasDoMes;         % Dias do mês
     else
       contNoturnos = contNoturnos + 1;
-      matrizTemp_Noturnos(contNoturnos, 1) = cont;                % ID
-      matrizTemp_Noturnos(contNoturnos, 2) = cargoNumerico;       % Cargo
-      matrizTemp_Noturnos(contNoturnos, 3) = 2;                   % Turno noturno
-      matrizTemp_Noturnos(contNoturnos, 4) = feriasNumerico;      % Férias
-      matrizTemp_Noturnos(contNoturnos, 5) = reescalNumerico;     % Reescal
-      matrizTemp_Noturnos(contNoturnos, 6) = qtdeDiasReescala;    % Qtde dias reescala
-      matrizTemp_Noturnos(contNoturnos, 7:end) = diasDoMes;       % Dias do mês
+      matrizTemp_Noturnos(contNoturnos, 1) = cargoNumerico;       % Cargo
+      matrizTemp_Noturnos(contNoturnos, 2) = 2;                   % Turno noturno
+      matrizTemp_Noturnos(contNoturnos, 3) = inicio;              % Inicio
+      matrizTemp_Noturnos(contNoturnos, 4) = fim;                 % Fim
+      matrizTemp_Noturnos(contNoturnos, 5:end) = diasDoMes;       % Dias do mês
     endif
   endfor
 

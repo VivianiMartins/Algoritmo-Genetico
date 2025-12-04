@@ -1,4 +1,4 @@
-function individuo = geraEscalaAlternada(individuo, diasDisponiveis, qtdeDiasDoMes, escala)
+function individuo = geraEscalaAlternada(individuo, diasDisponiveis, qtdeDiasDoMes, escala, dadosFuncionario)
   %% Gera escala alternada nos dias disponíveis
   %% Regras:
   %%   - Não pode haver 1's consecutivos
@@ -8,32 +8,37 @@ function individuo = geraEscalaAlternada(individuo, diasDisponiveis, qtdeDiasDoM
   maxDiasTrabalhados = ceil(qtdeDiasDoMes / 2);
   contDiasTrabalhados = 0;
 
-   keyboard
-  prev = 0;
-  for d = diasDisponiveis
-    if prev == 1
-      % Se trabalhou no dia anterior, hoje não pode trabalhar
-      individuo(d) = 0;
-      prev = 0;
-    else
+   if escala == 1
+    prev = dadosFuncionario(end);
+    for d = diasDisponiveis
       % Verifica se ainda pode alocar mais dias de trabalho
       if contDiasTrabalhados < maxDiasTrabalhados
-        % Decide aleatoriamente (50% de chance)
-        trabalha = rand() > 0.5;
-        individuo(d) = trabalha;
-
-        if trabalha
-          contDiasTrabalhados = contDiasTrabalhados + 1;
-          prev = 1;
-        else
+        if prev == 1
+          % Se trabalhou no dia anterior, hoje não pode trabalhar
+          individuo(d) = 0;
           prev = 0;
-        endif
+        else
+          % Decide trabalhar
+          %trabalha = 1;
+          % Decide aleatoriamente (50% de chance)
+          %trabalha = rand() > 0.5;
+          % 70% de chance de ser 1
+          trabalha = rand() > 0.3;
+          individuo(d) = trabalha;
+
+          if trabalha
+            contDiasTrabalhados = contDiasTrabalhados + 1;
+            prev = 1;
+          else
+            prev = 0;
+          endif
+         endif
       else
-        % Já atingiu o limite de dias trabalhados
-        individuo(d) = 0;
-        prev = 0;
+         % Já atingiu o limite de dias trabalhados
+         break;
       endif
-    endif
-  endfor
+    endfor
+   endif
+
 
 endfunction

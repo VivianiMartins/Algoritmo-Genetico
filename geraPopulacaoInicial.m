@@ -53,9 +53,7 @@ function populacao = geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, q
       fprintf('Progresso: %d/%d indivíduos gerados (%.1f%%)\n', ...
               contIndividuo, qtdeIndividuos, (contIndividuo/qtdeIndividuos)*100);
     endif
-
   endfor
 
   fprintf('População gerada com sucesso!\n');
-  fprintf('Dimensões da população: %s\n', mat2str(size(populacao)));
 endfunction

@@ -72,13 +72,13 @@ function individuoValido = validaSolucao(individuo, dadosFuncionario, qtdeDiasDo
 
     % Gera escala alternada apenas nos dias disponíveis
     if !isempty(diasDisponiveis)
-      individuoValido = geraEscalaAlternada(individuoValido, diasDisponiveis, qtdeDiasDoMes, escala);
+      individuoValido = geraEscalaAlternada(individuoValido, diasDisponiveis, qtdeDiasDoMes, escala, dadosFuncionario);
     endif
 
   else
     % Não há período de ausência - todos os dias estão disponíveis
     diasDisponiveis = 1:qtdeDiasDoMes;
-    individuoValido = geraEscalaAlternada(individuoValido, diasDisponiveis, qtdeDiasDoMes,escala);
+    individuoValido = geraEscalaAlternada(individuoValido, diasDisponiveis, qtdeDiasDoMes,escala, dadosFuncionario);
   endif
 
 endfunction

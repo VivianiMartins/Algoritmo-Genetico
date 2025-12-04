@@ -27,6 +27,12 @@ function funcaoPrincipal_AG()
   numDiasMes = 31;
   diaReescala = 0;
 
+   if escala == 1
+    fprintf('=========== Geração para escala ===========\n\n');
+  else
+    fprintf('=========== Geração para reescala ===========\n\n');
+  endif
+
   % Gerando as populações iniciais de cada turno separadamente:
 
   populacaoDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, numDiasMes, escala, diaReescala);

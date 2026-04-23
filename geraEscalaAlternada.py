@@ -1,38 +1,45 @@
 import numpy as np
 
-def geraEscalaAlternada(individuo, diasDisponiveis, qtdeDiasDoMes, escala, dadosFuncionario):
+def geraEscalaAlternada(individuo, diasDisponiveis, qtdeDiasDoMes, tipo, dadosFuncionario):
     """
-    Gera escala alternada nos dias disponíveis
-    Regras:
-      - Não pode haver 1's consecutivos
-      - Total de 1's não pode passar de ceil(qtdeDiasDoMes/2)
-      - Preferencialmente alternado
+    Gera escala alternada nos dias disponíveis para um funcionário, seguindo regras de trabalho.
+
+    Entrada:
+      individuo: array numpy [1 x dias] com a escala inicial (pode ter dias já definidos)
+      diasDisponiveis: lista de inteiros, dias disponíveis para trabalho (1-based)
+      qtdeDiasDoMes: inteiro, número total de dias no mês
+      tipo: inteiro, tipo de escala (1=nova escala, 0=reescala - não implementado)
+      dadosFuncionario: array numpy com dados do funcionário [Cargo, Turno, Inicio, Fim, Dias...]
+
+    Saída:
+      individuo: array numpy [1 x dias] com escala atualizada (0=não trabalha, 1=trabalha)
+
+    Regras aplicadas:
+      - Não permite 1's consecutivos (dias de trabalho seguidos), com preferencial por alternância
+      - Limite máximo de dias trabalhados: ceil(qtdeDiasDoMes/2)
+      - Primeiro dia do mês segue o último do anterior
+      - Usa probabilidade aleatória (70% chance de trabalhar) quando possível
     """
     maxDiasTrabalhados = int(np.ceil(qtdeDiasDoMes / 2))
     contDiasTrabalhados = 0
 
-    if escala == 1:
-        prev = dadosFuncionario[-1]
+    if tipo == 1:
+        prev = int(dadosFuncionario[-1]) #Aqui verifica o último dia do mês anterior
         for d in diasDisponiveis:
-            # Verifica se ainda pode alocar mais dias de trabalho
             if contDiasTrabalhados < maxDiasTrabalhados:
                 if prev == 1:
-                    # Se trabalhou no dia anterior, hoje não pode trabalhar
-                    individuo[d-1] = 0
+                    individuo[d - 1] = 0
                     prev = 0
                 else:
-                    # Decide trabalhar
-                    # 70% de chance de ser 1
-                    trabalha = np.random.rand() > 0.3
-                    individuo[d-1] = trabalha
-
+                    trabalha = np.random.rand() > 0.3  # Probabilidade de 70% sim e 30% não
+                    individuo[d - 1] = int(trabalha)
                     if trabalha:
                         contDiasTrabalhados += 1
                         prev = 1
                     else:
                         prev = 0
-            else:
-                # Já atingiu o limite de dias trabalhados
-                break
+            else: break
+    else:
+        pass #implementar para reescala depois
 
     return individuo

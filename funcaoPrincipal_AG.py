@@ -1,22 +1,15 @@
 import pandas as pd
 import time
-import numpy as np
 from transformarListaFuncionarios import transformarListaFuncionarios
 from geraPopulacaoInicial import geraPopulacaoInicial
 
 def funcaoPrincipal_AG():
-    # ============================================================
-    # INICIAR CONTADOR DE TEMPO
-    # ============================================================
-    tempoInicio = time.time()  # Inicia cronômetro
+    tempoInicio = time.time()  # Inicia o cronômetro para medir o tempo total de execução
 
-    # importando a tabela com os funcionários contendo: nome, cargo, turno e férias.
     listaFuncionarios_df = pd.read_csv('listaFuncionarios.csv')
     listaFuncionarios = listaFuncionarios_df.values.tolist()
 
-    # terei duas matrizes de funcionarios por turno:
     funcDiurnos, funcNoturnos, numDiasMes = transformarListaFuncionarios(listaFuncionarios)
-    tempoDecorrido = time.time() - tempoInicio
 
     print('\n========== RELATÓRIO DE FUNCIONÁRIOS ==========')
     print(f'Total de funcionários: {len(listaFuncionarios)}')
@@ -24,35 +17,36 @@ def funcaoPrincipal_AG():
     print(f'Funcionários noturnos: {funcNoturnos.shape[0]}')
     print('==============================================\n')
 
-    #%%% Parâmetros %%%
+    #%%% Parâmetros para o Algoritmo genético %%%
     qtdeIndividuos = 5
-    escala = 1  # 1 para escala, 0 para reescala
-    # se for escala, tem que modificar a quantidade de dias do mês para o do mês seguinte
+    tipo = 1 # criar input para usuário, algo para o fim
     numDiasMes = 31
-    diaReescala = 0
+    diaReescala = 0 #ideal seria automatizar esta conta, algo para o fim
 
-    if escala == 1:
+    if tipo not in [1, 2]:
+        raise ValueError("Deve ser 1 para escala ou 2 para reescala")
+    elif tipo== 1:  # Verifica se é geração de nova escala
         print('=========== Geração para escala ===========\n\n')
-    else:
+    else:  # Se for reescala (escala == 2)
         print('=========== Geração para reescala ===========\n\n')
 
-    # Gerando as populações iniciais de cada turno separadamente:
-    populacaoDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, numDiasMes, escala, diaReescala)
+    #%% Gerando as populações iniciais %%#
+    populacaoDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, numDiasMes, tipo, diaReescala)
 
     # Pega o indivíduo 5 completo (toda a escala)
-    individuo5 = populacaoDiurna[:, :, 4]  # matriz [funcionários x dias]
+    individuo5 = populacaoDiurna[:, :, 4]  # Seleciona o 5º indivíduo (índice 4, 0-based)
 
     # Pega a escala do funcionário de férias no individuo 5 (assuming 14 is 13 in 0-based)
-    escalaFunc14 = populacaoDiurna[13, :, 4]  # vetor [1 x dias]
+    escalaFunc14 = populacaoDiurna[13, :, 4]  # Seleciona escala do 14º funcionário no 5º indivíduo
 
-    # keyboard equivalent
-    input("Press Enter to continue...")
+    # Keyboard equivalent - pausa para o usuário ver os resultados
+    input("Press Enter to continue...")  # Aguarda entrada do usuário para continuar
 
     # RESULTADO
-    tempoTotal = time.time() - tempoInicio  # Tempo total de execução
-    print(f'Dimensões da população: {populacaoDiurna.shape[0]} x {populacaoDiurna.shape[1]} x {populacaoDiurna.shape[2]}')
-    print(f'Tempo Total: {tempoTotal:.2f} segundos ({tempoTotal/60:.2f} minutos)')
-    # populacaoNoturna = geraPopulacaoInicial(funcNoturnos, qtdeIndividuos, numDiasMes)
+    tempoTotal = time.time() - tempoInicio  # Calcula tempo total de execução
+    print(f'Dimensões da população: {populacaoDiurna.shape[0]} x {populacaoDiurna.shape[1]} x {populacaoDiurna.shape[2]}')  # Imprime forma da matriz
+    print(f'Tempo Total: {tempoTotal:.2f} segundos ({tempoTotal/60:.2f} minutos)')  # Imprime tempo total
+    # populacaoNoturna = geraPopulacaoInicial(funcNoturnos, qtdeIndividuos, numDiasMes)  # Linha comentada para noturnos
 
-if __name__ == "__main__":
-    funcaoPrincipal_AG()
+if __name__ == "__main__":  # Verifica se o script está sendo executado diretamente
+    funcaoPrincipal_AG()  # Chama a função principal

@@ -1,5 +1,7 @@
 import numpy as np
 
+_cache_max_dias = {}
+
 def geraEscalaAlternada(individuo, diasDisponiveis, qtdeDiasDoMes, tipo, dadosFuncionario):
     """
     Gera escala alternada nos dias disponíveis para um funcionário, seguindo regras de trabalho.
@@ -20,25 +22,29 @@ def geraEscalaAlternada(individuo, diasDisponiveis, qtdeDiasDoMes, tipo, dadosFu
       - Primeiro dia do mês segue o último do anterior
       - Usa probabilidade aleatória (70% chance de trabalhar) quando possível
     """
-    maxDiasTrabalhados = int(np.ceil(qtdeDiasDoMes / 2))
+    if qtdeDiasDoMes not in _cache_max_dias:
+        _cache_max_dias[qtdeDiasDoMes] = int(np.ceil(qtdeDiasDoMes / 2))
+    maxDiasTrabalhados = _cache_max_dias[qtdeDiasDoMes]
+
     contDiasTrabalhados = 0
 
     if tipo == 1:
         prev = int(dadosFuncionario[-1]) #Aqui verifica o último dia do mês anterior
         for d in diasDisponiveis:
-            if contDiasTrabalhados < maxDiasTrabalhados:
-                if prev == 1:
-                    individuo[d - 1] = 0
-                    prev = 0
+            if contDiasTrabalhados >= maxDiasTrabalhados:
+                break
+
+            if prev == 1:
+                individuo[d - 1] = 0
+                prev = 0
+            else:
+                trabalha = np.random.random() > 0.3  # Probabilidade de 70% sim e 30% não
+                individuo[d - 1] = int(trabalha)
+                if trabalha:
+                    contDiasTrabalhados += 1
+                    prev = 1
                 else:
-                    trabalha = np.random.rand() > 0.3  # Probabilidade de 70% sim e 30% não
-                    individuo[d - 1] = int(trabalha)
-                    if trabalha:
-                        contDiasTrabalhados += 1
-                        prev = 1
-                    else:
-                        prev = 0
-            else: break
+                    prev = 0
     else:
         pass #implementar para reescala depois
 

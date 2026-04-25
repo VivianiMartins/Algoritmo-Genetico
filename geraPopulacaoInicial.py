@@ -11,6 +11,7 @@ def geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, qtdeDiasDoMes, tip
       qtdeIndividuos: número de indivíduos (soluções) na população
       qtdeDiasDoMes: número de dias no mês
       tipo: 1 para escala (gera do zero), 0 para reescala (usa dias existentes)
+      diaReescala: dia para reescala
 
     Saída:
       populacao: matriz 3D [qtdeFuncionarios x qtdeDiasDoMes x qtdeIndividuos]
@@ -19,27 +20,19 @@ def geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, qtdeDiasDoMes, tip
                 Valores: 0 (não trabalha) ou 1 (trabalha)
     """
     qtdePessoasDoTurno = funcionariosDoTurno.shape[0]
-
-    populacao = np.zeros((qtdePessoasDoTurno, qtdeDiasDoMes, qtdeIndividuos))
+    populacao = np.zeros((qtdePessoasDoTurno, qtdeDiasDoMes, qtdeIndividuos), dtype=np.int8)
+    template_zero = np.zeros(qtdeDiasDoMes, dtype=np.int8)
 
     for contIndividuo in range(qtdeIndividuos):
-
         for contPessoa in range(qtdePessoasDoTurno):
+            dados_funcionario = funcionariosDoTurno[contPessoa, :]
+
             if tipo == 1:
-                individuo = np.zeros(qtdeDiasDoMes)
+                individuo = template_zero.copy()
             else:
-                individuo = funcionariosDoTurno[contPessoa, 4:].copy()
+                individuo = dados_funcionario[4:]
 
-            individuo = validaSolucao(individuo, funcionariosDoTurno[contPessoa, :], qtdeDiasDoMes, tipo)
-
+            individuo = validaSolucao(individuo, dados_funcionario, qtdeDiasDoMes, tipo)
             populacao[contPessoa, :, contIndividuo] = individuo
 
-        if (contIndividuo + 1) % max(1, qtdeIndividuos // 10) == 0:  # Calcula se é múltiplo de 10%
-            print(f'Progresso: {contIndividuo+1}/{qtdeIndividuos} indivíduos gerados ({(contIndividuo+1)/qtdeIndividuos*100:.1f}%)')  # Imprime progresso
-
-    #Salva em arquivo para visualização completa (opcional)
-    #np.savetxt('populacao_visualizacao.txt', populacao.reshape(populacao.shape[0] * populacao.shape[2], populacao.shape[1]), fmt='%d', header=f'Populacao {populacao.shape} - Funcionarios x Dias (repetido por individuo)')
-
-    print('População gerada com sucesso!')  # Confirma que terminou
-    # Retorna a população gerada
     return populacao

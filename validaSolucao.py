@@ -1,6 +1,8 @@
+import numpy as np
 from geraEscalaAlternada import geraEscalaAlternada
 from processarLicensa import processar_licensa
 
+_cache_diasDisponiveis = {}  #temporário até usar processa_licensa
 def validaSolucao(individuo, dadosFuncionario, qtdeDiasDoMes, tipo):
     """
     Valida e gera uma escala alternada válida para o funcionário, considerando regras.
@@ -17,9 +19,12 @@ def validaSolucao(individuo, dadosFuncionario, qtdeDiasDoMes, tipo):
 
     # individuoPreValido, diasDisponiveis = processar_licensa(individuo, dadosFuncionario, qtdeDiasDoMes, tipo)
 
-    individuoPreValido = individuo.copy()
+    #temporário até usar processa_licensa
+    if qtdeDiasDoMes not in _cache_diasDisponiveis:
+        _cache_diasDisponiveis[qtdeDiasDoMes] = np.arange(1, qtdeDiasDoMes + 1)
+    diasDisponiveis = _cache_diasDisponiveis[qtdeDiasDoMes]
 
-    diasDisponiveis = list(range(1, qtdeDiasDoMes + 1)) #temporário até usar processa_licensa
-    individuoValido = geraEscalaAlternada(individuoPreValido, diasDisponiveis, qtdeDiasDoMes, tipo, dadosFuncionario)
+
+    individuoValido = geraEscalaAlternada(individuo, diasDisponiveis, qtdeDiasDoMes, tipo, dadosFuncionario)
 
     return individuoValido

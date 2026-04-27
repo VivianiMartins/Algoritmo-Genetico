@@ -65,6 +65,7 @@ def transformarListaEntrada(listaFuncionarios):
         nome = listaFuncionarios[cont][0].strip()  # Nome do funcionário
         cargo = listaFuncionarios[cont][1].strip().lower()
         cargoNumerico = 1 if cargo in ["farmacêutico", "farmaceutico"] else 2
+        ultimoDiaMes = listaFuncionarios[cont][-1]
 
         turno = listaFuncionarios[cont][2].strip().lower()
 
@@ -80,7 +81,7 @@ def transformarListaEntrada(listaFuncionarios):
             matrizTemp_Diurnos[contDiurnos, 2] = inicio
             matrizTemp_Diurnos[contDiurnos, 3] = fim
             matrizTemp_Diurnos[contDiurnos, 4:] = diasDoMes
-            nomesDiurnos.append((nome, cargoNumerico))
+            nomesDiurnos.append((nome, cargoNumerico, ultimoDiaMes))
             contDiurnos += 1
         else:
             matrizTemp_Noturnos[contNoturnos, 0] = cargoNumerico
@@ -88,7 +89,7 @@ def transformarListaEntrada(listaFuncionarios):
             matrizTemp_Noturnos[contNoturnos, 2] = inicio
             matrizTemp_Noturnos[contNoturnos, 3] = fim
             matrizTemp_Noturnos[contNoturnos, 4:] = diasDoMes
-            nomesNoturnos.append((nome, cargoNumerico))
+            nomesNoturnos.append((nome, cargoNumerico, ultimoDiaMes))
             contNoturnos += 1
 
     funcionariosDiurnos = matrizTemp_Diurnos[:contDiurnos, :]

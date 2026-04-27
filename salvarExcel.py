@@ -27,7 +27,7 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
 
     Entrada:
       populacao: array 3D [funcionários x dias x indivíduos]
-      lista_nomes_cargos: lista de tuplas [(nome, cargo_numerico), ...]
+      lista_nomes_cargos: lista de tuplas [(nome, cargo_numerico, ultimo_dia_mes_ant), ...]
                           ou lista de dicts [{'nome': str, 'cargo': int}, ...]
       caminho_arquivo: caminho do arquivo Excel a ser criado (padrão: 'populacao_escalas.xlsx')
       num_dias_mes: número de dias no mês (padrão: 31)
@@ -47,19 +47,23 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
     # Extrai nomes e cargos da lista
     nomes_funcionarios = []
     cargos_texto = []
+    ultimo_dia_mes_anterior = []
 
     for item in lista_nomes_cargos:
         if isinstance(item, tuple):
-            nome, cargo_num = item
+            nome, cargo_num, ultimo_dia_mes_ant = item
         elif isinstance(item, dict):
             nome = item.get('nome', 'Desconhecido')
             cargo_num = item.get('cargo', 2)
+            ultimo_dia_mes_ant = item.get('ultimo_dia_mes_ant', 0)
         else:
             nome = str(item)
             cargo_num = 2
+            ultimo_dia_mes_ant = 0
 
         nomes_funcionarios.append(nome)
         cargos_texto.append(_converter_cargo_numerico_para_texto(cargo_num))
+        ultimo_dia_mes_anterior.append(ultimo_dia_mes_ant)
 
     # Valida quantidade de funcionários
     if len(nomes_funcionarios) != qtdeFuncionarios:
@@ -96,7 +100,7 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
     )
 
     # ===== FUNÇÃO AUXILIAR: Cria uma aba com a escala =====
-    def criar_aba_escala(sheet, populacao_individuo, nomes, cargos):
+    def criar_aba_escala(sheet, populacao_individuo, nomes, cargos, ultimo_dia_mes_anterior):
         """
         Cria uma aba formatada com a escala de um indivíduo.
 
@@ -119,9 +123,15 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
         sheet['B1'].alignment = alinhamento_centro
         sheet['B1'].fill = cor_cabecalho
 
-        # Colunas C em diante: Dias do mês
+        # Coluna C: Último dia do mês anterior
+        sheet['C1'] = 'Último dia do mês anterior'
+        sheet['C1'].font = fonte_cabecalho
+        sheet['C1'].alignment = alinhamento_centro
+        sheet['C1'].fill = cor_cabecalho
+
+        # Colunas D em diante: Dias do mês
         for dia in range(1, qtdeDias + 1):
-            coluna = get_column_letter(dia + 2)  # C, D, E, ...
+            coluna = get_column_letter(dia + 3)  # D, E, ...
             celula = sheet[f'{coluna}1']
             celula.value = f'Dia {dia}'
             celula.font = fonte_cabecalho
@@ -130,15 +140,15 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
 
         # Coluna total (se somatório ativo)
         if somatorio:
-            coluna_total = get_column_letter(qtdeDias + 3)
+            coluna_total = get_column_letter(qtdeDias + 4)
             sheet[f'{coluna_total}1'] = 'Total dias escalados'
             sheet[f'{coluna_total}1'].font = fonte_cabecalho
             sheet[f'{coluna_total}1'].fill = cor_cabecalho
             sheet[f'{coluna_total}1'].alignment = alinhamento_centro
 
-        # ===== DADOS DOS FUNCIONÁRIOS (LINHAS 2+) =====
+        # ===== DADOS DOS FUNCIONÁRIOS (LINHAS 3+) =====
         for func in range(qtdeFuncionarios):
-            linha = func + 2
+            linha = func + 3
 
             # Coluna A: Nome
             sheet[f'A{linha}'] = nomes[func]
@@ -150,9 +160,14 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
             sheet[f'B{linha}'].alignment = alinhamento_centro
             sheet[f'B{linha}'].border = borda
 
+            # Coluna C: Último dia do mês anterior (0 ou 1)
+            sheet[f'C{linha}'] = ultimo_dia_mes_anterior[func]
+            sheet[f'C{linha}'].alignment = alinhamento_centro
+            sheet[f'C{linha}'].border = borda
+
             # Colunas de dias
             for dia in range(qtdeDias):
-                coluna = get_column_letter(dia + 3)  # C, D, E, ...
+                coluna = get_column_letter(dia + 4)  # D, E, ...
                 celula = sheet[f'{coluna}{linha}']
 
                 valor = int(populacao_individuo[func, dia])
@@ -165,10 +180,10 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
 
             # Fórmula: Total de dias escalados (se somatório ativo)
             if somatorio:
-                coluna_total = get_column_letter(qtdeDias + 3)
+                coluna_total = get_column_letter(qtdeDias + 4)
                 celula_total = sheet[f'{coluna_total}{linha}']
-                primeira_coluna = get_column_letter(3)  # C
-                ultima_coluna = get_column_letter(qtdeDias + 2)
+                primeira_coluna = get_column_letter(4)  # D
+                ultima_coluna = get_column_letter(qtdeDias + 3)
                 celula_total.value = f'=SUM({primeira_coluna}{linha}:{ultima_coluna}{linha})'
                 celula_total.data_type = 'f'
                 celula_total.alignment = alinhamento_centro
@@ -179,13 +194,14 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
         # ===== AJUSTA LARGURA DAS COLUNAS =====
         sheet.column_dimensions['A'].width = 18  # Nome
         sheet.column_dimensions['B'].width = 14  # Cargo
+        sheet.column_dimensions['C'].width = 24  # Último dia do mês anterior
 
-        for dia in range(1, qtdeDias + 1):
-            coluna = get_column_letter(dia + 2)
+        for dia in range(1, qtdeDias + 2):
+            coluna = get_column_letter(dia + 3)
             sheet.column_dimensions[coluna].width = 8
 
         if somatorio:
-            coluna_total = get_column_letter(qtdeDias + 3)
+            coluna_total = get_column_letter(qtdeDias + 4)
             sheet.column_dimensions[coluna_total].width = 16
 
         # ===== RODAPÉ COM SOMATÓRIOS (Se ativo) =====
@@ -199,7 +215,7 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
 
             # Fórmulas de soma por dia
             for dia in range(qtdeDias):
-                coluna = get_column_letter(dia + 3)  # C, D, E, ...
+                coluna = get_column_letter(dia + 4)  # D, E, ...
                 celula = sheet[f'{coluna}{linha_rodape}']
 
                 primeira_linha = 2
@@ -215,10 +231,10 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
     if salvar_completo: # Para cada indivíduo, cria uma aba
         for ind in range(qtdeIndividuos):
             sheet = workbook.create_sheet(title=f'Indivíduo_{ind + 1}')
-            criar_aba_escala(sheet, populacao[:, :, ind], nomes_funcionarios, cargos_texto)
+            criar_aba_escala(sheet, populacao[:, :, ind], nomes_funcionarios, cargos_texto, ultimo_dia_mes_anterior)
         workbook.save(caminho_arquivo)
 
     else: # Salva apenas um indivíduo
         sheet = workbook.create_sheet(title='Escala')
-        criar_aba_escala(sheet, populacao[:, :, indice_individuo], nomes_funcionarios, cargos_texto)
+        criar_aba_escala(sheet, populacao[:, :, indice_individuo], nomes_funcionarios, cargos_texto, ultimo_dia_mes_anterior)
         workbook.save(caminho_arquivo)

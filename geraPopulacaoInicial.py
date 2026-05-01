@@ -10,7 +10,7 @@ def geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, qtdeDiasDoMes, tip
                           [Cargo, Turno, Inicio, Fim, Dia1, Dia2, ..., DiaN]
       qtdeIndividuos: número de indivíduos (soluções) na população
       qtdeDiasDoMes: número de dias no mês
-      tipo: 1 para escala (gera do zero), 0 para reescala (usa dias existentes)
+      tipo: 1 para escala (gera do zero), 2 para reescala (usa dias existentes)
       diaReescala: dia para reescala
 
     Saída:

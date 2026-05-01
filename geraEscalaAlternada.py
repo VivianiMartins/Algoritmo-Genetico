@@ -10,7 +10,7 @@ def geraEscalaAlternada(individuo, diasDisponiveis, qtdeDiasDoMes, tipo, dadosFu
       individuo: array numpy [1 x dias] com a escala inicial (pode ter dias já definidos)
       diasDisponiveis: lista de inteiros, dias disponíveis para trabalho (1-based)
       qtdeDiasDoMes: inteiro, número total de dias no mês
-      tipo: inteiro, tipo de escala (1=nova escala, 0=reescala - não implementado)
+      tipo: inteiro, tipo de escala (1=nova escala, 2=reescala - não implementado)
       dadosFuncionario: array numpy com dados do funcionário [Cargo, Turno, Inicio, Fim, Dias...]
 
     Saída:

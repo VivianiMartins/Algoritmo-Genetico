@@ -1,5 +1,7 @@
 import pandas as pd
 import time
+
+from funcaoFitness import funcaoFitness
 from salvarExcel import salvar_excel
 from transformarListaEntrada import transformarListaEntrada
 from geraPopulacaoInicial import geraPopulacaoInicial
@@ -20,7 +22,8 @@ def funcaoPrincipal_AG():
 
     #%%% Parâmetros para o Algoritmo genético %%%
     qtdeIndividuos = 10
-    tipo = 1 # criar input para usuário, algo para o fim
+    tipo = 1 # criar input para usuário, algo para o fim - 1 é escala e 2 é reescala
+    turno = 1 # criar input para usuário, algo para o fim - 1 é diurno e 2 é noturno
     numDiasMes = 31
     diaReescala = 0 #ideal seria automatizar esta conta, algo para o fim
 
@@ -32,17 +35,21 @@ def funcaoPrincipal_AG():
         print('=========== Geração para reescala ===========\n\n')
 
     #%% Gerando as populações iniciais %%#
+
+    # Diurno #
     populacaoDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, numDiasMes, tipo, diaReescala)
 
-    salvar_excel( populacao=populacaoDiurna, lista_nomes_cargos=nomesDiurnos, caminho_arquivo='população_inicial_diurna.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
+    #salvar_excel( populacao=populacaoDiurna, lista_nomes_cargos=nomesDiurnos, caminho_arquivo='população_inicial_diurna.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
     tempoTotal = time.time() - tempoInicio  # Calcula tempo total de execução até o momento
     print(f'Dimensões da população inicial diurna: {populacaoDiurna.shape[0]} x {populacaoDiurna.shape[1]} x {populacaoDiurna.shape[2]}')
     print(f'Tempo Total: {tempoTotal:.2f} segundos ({tempoTotal/60:.2f} minutos)')
 
+    resultadoFitness = funcaoFitness(populacaoDiurna, numDiasMes, tipo, turno)
 
 
+    # Noturno #
     populacaoNoturna = geraPopulacaoInicial(funcNoturnos, qtdeIndividuos, numDiasMes, tipo, diaReescala)
-    salvar_excel( populacao=populacaoNoturna, lista_nomes_cargos=nomesNoturnos, caminho_arquivo='população_inicial_noturna.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
+    #salvar_excel( populacao=populacaoNoturna, lista_nomes_cargos=nomesNoturnos, caminho_arquivo='população_inicial_noturna.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
     tempoTotal = time.time() - tempoInicio  # Calcula tempo total de execução até o momento
     print(f'Dimensões da população inicial noturna: {populacaoNoturna.shape[0]} x {populacaoNoturna.shape[1]} x {populacaoNoturna.shape[2]}')
     print(f'Tempo Total: {tempoTotal:.2f} segundos ({tempoTotal / 60:.2f} minutos)')

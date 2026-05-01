@@ -11,7 +11,7 @@ def validaSolucao(individuo, dadosFuncionario, qtdeDiasDoMes, tipo):
       individuo: array numpy com a escala atual [1 x dias] (pode estar vazio/zerado ou preenchido)
       dadosFuncionario: array numpy com [Cargo, Turno, Inicio, Fim, Dias...]
       qtdeDiasDoMes: inteiro, número de dias no mês
-      tipo: inteiro, tipo de escala (1=nova, 0=reescala)
+      tipo: inteiro, tipo de escala (1=nova, 2=reescala)
 
     Saída:
       individuoValido: array numpy [1 x dias] com escala válida (0=não trabalha, 1=trabalha)

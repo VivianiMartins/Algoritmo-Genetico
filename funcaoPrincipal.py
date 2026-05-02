@@ -1,8 +1,10 @@
 import pandas as pd
 import time
 
+from cruzamento import cruzamento
 from funcaoFitness import funcaoFitness
 from salvarExcel import salvar_excel
+from selecao import selecao
 from transformarListaEntrada import transformarListaEntrada
 from geraPopulacaoInicial import geraPopulacaoInicial
 
@@ -40,19 +42,20 @@ def funcaoPrincipal_AG():
     populacaoDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, numDiasMes, tipo, diaReescala)
 
     #salvar_excel( populacao=populacaoDiurna, lista_nomes_cargos=nomesDiurnos, caminho_arquivo='população_inicial_diurna.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
+    resultadoFitness = funcaoFitness(populacaoDiurna, numDiasMes, tipo, turno)
+    selecionados = selecao(resultadoFitness, num_selecionados=2)
+    nova_populacao = cruzamento(selecionados, populacaoDiurna, qtd_filhos = 6)
+
     tempoTotal = time.time() - tempoInicio  # Calcula tempo total de execução até o momento
-    print(f'Dimensões da população inicial diurna: {populacaoDiurna.shape[0]} x {populacaoDiurna.shape[1]} x {populacaoDiurna.shape[2]}')
     print(f'Tempo Total: {tempoTotal:.2f} segundos ({tempoTotal/60:.2f} minutos)')
 
-    resultadoFitness = funcaoFitness(populacaoDiurna, numDiasMes, tipo, turno)
 
 
     # Noturno #
-    populacaoNoturna = geraPopulacaoInicial(funcNoturnos, qtdeIndividuos, numDiasMes, tipo, diaReescala)
+    #populacaoNoturna = geraPopulacaoInicial(funcNoturnos, qtdeIndividuos, numDiasMes, tipo, diaReescala)
     #salvar_excel( populacao=populacaoNoturna, lista_nomes_cargos=nomesNoturnos, caminho_arquivo='população_inicial_noturna.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
-    tempoTotal = time.time() - tempoInicio  # Calcula tempo total de execução até o momento
-    print(f'Dimensões da população inicial noturna: {populacaoNoturna.shape[0]} x {populacaoNoturna.shape[1]} x {populacaoNoturna.shape[2]}')
-    print(f'Tempo Total: {tempoTotal:.2f} segundos ({tempoTotal / 60:.2f} minutos)')
+    #tempoTotal = time.time() - tempoInicio  # Calcula tempo total de execução até o momento
+    #print(f'Tempo Total: {tempoTotal:.2f} segundos ({tempoTotal / 60:.2f} minutos)')
 
 if __name__ == "__main__":  # Verifica se o script está sendo executado diretamente
     funcaoPrincipal_AG()  # Chama a função principal

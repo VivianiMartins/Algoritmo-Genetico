@@ -40,7 +40,8 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno):
 
         if (np.any(x_array == 0) or np.any(x_array == 3) or
             np.any(y_array == 0) or np.any(y_array < minAuxiliar) or np.any(y_array > maxAuxiliar)):
-            somaTemp = np.inf
+            # somaTemp = -np.inf #voltar quando população inicial estiver calibrada corretamente
+            somaTemp = 1e-10  # temporário, apenas para dar continuidade no algoritmo - 0.0000000001
         else:
             # avaliando farmacêuticos
             parcelas_farm = 3.825 * ((1 / x_array) ** (-1 + x_array))
@@ -53,7 +54,7 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno):
 
             somaTemp += np.sum(parcelas_farm) + np.sum(parcelas_aux)
 
-        if somaTemp != np.inf:
+        if somaTemp != -np.inf:
             # avaliando dias trabalhados por funcionário
             maxPermitido = qtdeDiasDoMes/2
             limite_dias = math.ceil(maxPermitido)
@@ -70,7 +71,8 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno):
             if divisor is not None:
                 z_array = np.sum(individuo, axis=1) #1 são as linhas
                 if np.any(z_array == 0) or np.any(z_array > limite_dias):
-                    somaTemp = np.inf
+                    #somaTemp = -np.inf #voltar quando população inicial estiver calibrada corretamente
+                    somaTemp = 1e-10 #temporário, apenas para dar continuidade no algoritmo, 0.0000000001
                 else:
                     parcelas = 0.000000125 * ((1 / z_array) ** (-maxPermitido + (z_array / divisor)))
                     somaTemp += np.sum(parcelas)

@@ -1,6 +1,7 @@
 import numpy as np
+from validaSolucao import validaSolucao
 
-def cruzamento(selecionados, populacao, qtd_filhos):
+def cruzamento(selecionados, populacao, dadosFuncionarios ,qtd_filhos):
     """
     Cruzamento dos indivíduos selecionados utilizando 5 pontos de corte iniciais:
     O bloco 1 para os farmacêuticos, e 4 blocos (quartos) para os auxiliares.
@@ -10,6 +11,7 @@ def cruzamento(selecionados, populacao, qtd_filhos):
     Entrada:
       selecionados: lista ou array contendo os índices dos individuos selecionados
       populacao: array 3D [funcionários x dias x indivíduos]
+      adosFuncionario: array numpy com [Cargo, Turno, Inicio, Fim, Dias...]
       qtd_filhos: quantidade de filhos a serem gerados por par de pais
 
     Saída:
@@ -58,19 +60,23 @@ def cruzamento(selecionados, populacao, qtd_filhos):
                     filho_aux[indices_bloco, :] = auxiliares_2[indices_bloco, :]
 
             filho_completo = np.vstack((filho_farm, filho_aux))
-            filhos_gerados.append(filho_completo)
 
+            eh_valido = validaSolucao(filho_completo, num_dias, 1, dadosFuncionarios, False)
 
-    if len(filhos_gerados) > 0: #validacao das dimensões (passar para validaSolucao e usar as outras validações de lá)
+            if eh_valido:
+                filhos_gerados.append(filho_completo)
+
+    if len(filhos_gerados) > 0:
         filhos_finais = np.stack(filhos_gerados, axis=2)
         qtde_total_filhos_esperada = (num_pais_selecionados // 2) * qtd_filhos
-        shape_esperado = (num_funcionarios_total, num_dias, qtde_total_filhos_esperada)
 
-        if filhos_finais.shape != shape_esperado:
-            raise ValueError(f"ALERTA CRÍTICO: Dimensões corrompidas no cruzamento!\n"
-                             f"Esperado: {shape_esperado}\n"
-                             f"Obtido:   {filhos_finais.shape}")
+        if filhos_finais.shape[2] != qtde_total_filhos_esperada:
+            print(f"Aviso do Cruzamento: Foram gerados {filhos_finais.shape[2]} filhos válidos "
+                  f"de um total esperado de {qtde_total_filhos_esperada}.")
     else:
         filhos_finais = np.empty((num_funcionarios_total, num_dias, 0))
+        print("Aviso Crítico: Nenhum filho gerado passou nas regras de validação!")
+
+    return filhos_finais
 
     return filhos_finais

@@ -42,8 +42,8 @@ def transformarListaEntrada(listaFuncionarios):
       funcionariosDiurnos: matriz [funcionários x colunas_dados]
       funcionariosNoturnos: matriz [funcionários x colunas_dados]
       numDiasMes: número de dias do mês
-      nomesDiurnos: lista de tuplas (nome, cargo_numerico) para diurnos
-      nomesNoturnos: lista de tuplas (nome, cargo_numerico) para noturnos
+      nomesDiurnos: lista (nome, cargo_numerico, ultimoDiaMes) para diurnos
+      nomesNoturnos: lista (nome, cargo_numerico, ultimoDiaMes) para noturnos
     """
     contDiurnos = 0
     contNoturnos = 0

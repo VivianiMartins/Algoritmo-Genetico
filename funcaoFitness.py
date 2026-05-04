@@ -38,10 +38,10 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno):
         x_array = np.sum(farmaceuticosTemp, axis=0) #0 são as colunas
         y_array = np.sum(auxiliaresTemp, axis=0)
 
-        if (np.any(x_array == 0) or np.any(x_array == 3) or
+        if (np.any(x_array == 0) or np.any(x_array == 3) or np.any(x_array == 2) or
             np.any(y_array == 0) or np.any(y_array < minAuxiliar) or np.any(y_array > maxAuxiliar)):
             # somaTemp = -np.inf #voltar quando população inicial estiver calibrada corretamente
-            somaTemp = 1e-10  # temporário, apenas para dar continuidade no algoritmo - 0.0000000001
+            somaTemp = 0 # temporário, apenas para dar continuidade no algoritmo
         else:
             # avaliando farmacêuticos
             parcelas_farm = 3.825 * ((1 / x_array) ** (-1 + x_array))
@@ -72,7 +72,7 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno):
                 z_array = np.sum(individuo, axis=1) #1 são as linhas
                 if np.any(z_array == 0) or np.any(z_array > limite_dias):
                     #somaTemp = -np.inf #voltar quando população inicial estiver calibrada corretamente
-                    somaTemp = 1e-10 #temporário, apenas para dar continuidade no algoritmo, 0.0000000001
+                    somaTemp = 0 #temporário, apenas para dar continuidade no algoritmo
                 else:
                     parcelas = 0.000000125 * ((1 / z_array) ** (-maxPermitido + (z_array / divisor)))
                     somaTemp += np.sum(parcelas)

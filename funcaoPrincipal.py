@@ -1,6 +1,6 @@
+import numpy as np
 import pandas as pd
 import time
-
 from cruzamento import cruzamento
 from funcaoFitness import funcaoFitness
 from salvarExcel import salvar_excel
@@ -8,7 +8,7 @@ from selecao import selecao
 from transformarListaEntrada import transformarListaEntrada
 from geraPopulacaoInicial import geraPopulacaoInicial
 
-def funcaoPrincipal_AG():
+def funcaoPrincipal():
     tempoInicio = time.time()  # Inicia o cronômetro para medir o tempo total de execução
 
     listaFuncionarios_df = pd.read_csv('listaFuncionarios.csv')
@@ -39,12 +39,16 @@ def funcaoPrincipal_AG():
     #%% Gerando as populações iniciais %%#
 
     # Diurno #
-    populacaoDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, numDiasMes, tipo, diaReescala)
+    populacaoInicialDiurna = geraPopulacaoInicial(funcDiurnos, qtdeIndividuos, numDiasMes, tipo, diaReescala)
 
-    #salvar_excel( populacao=populacaoDiurna, lista_nomes_cargos=nomesDiurnos, caminho_arquivo='população_inicial_diurna.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
-    resultadoFitness = funcaoFitness(populacaoDiurna, numDiasMes, tipo, turno)
+    #salvar_excel( populacao=populacaoInicialDiurna, lista_nomes_cargos=nomesDiurnos, caminho_arquivo='população_inicial_diurna.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
+    resultadoFitness = funcaoFitness(populacaoInicialDiurna, numDiasMes, tipo, turno)
     selecionados = selecao(resultadoFitness, num_selecionados=2)
-    nova_populacao = cruzamento(selecionados, populacaoDiurna, qtd_filhos = 6)
+    print(f"Índices dos indivíduos selecionados: {selecionados}")
+    print(f"Fitness dos selecionados: {resultadoFitness[selecionados]}")
+    nova_populacao = cruzamento(selecionados, populacaoInicialDiurna, funcDiurnos, qtd_filhos = 6)
+
+    #salvar_excel( populacao=nova_populacao, lista_nomes_cargos=nomesDiurnos, caminho_arquivo='população_cruzamento_diurna.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
 
     tempoTotal = time.time() - tempoInicio  # Calcula tempo total de execução até o momento
     print(f'Tempo Total: {tempoTotal:.2f} segundos ({tempoTotal/60:.2f} minutos)')
@@ -58,4 +62,4 @@ def funcaoPrincipal_AG():
     #print(f'Tempo Total: {tempoTotal:.2f} segundos ({tempoTotal / 60:.2f} minutos)')
 
 if __name__ == "__main__":  # Verifica se o script está sendo executado diretamente
-    funcaoPrincipal_AG()  # Chama a função principal
+    funcaoPrincipal()  # Chama a função principal

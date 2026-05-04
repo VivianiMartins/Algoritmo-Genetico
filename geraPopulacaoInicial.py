@@ -37,13 +37,13 @@ def geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, qtdeDiasDoMes, tip
     qtdePessoasDoTurno = funcionariosDoTurno.shape[0]
     populacao = np.zeros((qtdePessoasDoTurno, qtdeDiasDoMes, qtdeIndividuos), dtype=np.int8)
 
-    for contPessoa in range(qtdePessoasDoTurno):
-        prev_historico = ultimos_dias_anteriores[contPessoa]
-        dadosFuncionario = funcionariosDoTurno[contPessoa, :]
+    for contIndividuo in range(qtdeIndividuos):
+        for contPessoa in range(qtdePessoasDoTurno):
+            prev_historico = ultimos_dias_anteriores[contPessoa]
+            dadosFuncionario = funcionariosDoTurno[contPessoa, :]
 
-        for contIndividuo in range(qtdeIndividuos):
             if tipo == 1:
-                individuo = template_zero.copy()
+                funcionario = template_zero.copy()
                 contDiasTrabalhados = 0
                 prev = prev_historico
 
@@ -54,17 +54,17 @@ def geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, qtdeDiasDoMes, tip
                         prev = 0
                     else:
                         trabalha = np.random.random() > 0.3
-                        individuo[d - 1] = int(trabalha)
+                        funcionario[d - 1] = int(trabalha)
                         if trabalha:
                             contDiasTrabalhados += 1
                             prev = 1
                         else:
                             prev = 0
-            # ver se ainda vou precisar de usar ValidaSolucao, pq tenho que gerar ela já válida
-
             else:
-                individuo = dadosFuncionario[4:]
+                funcionario = dadosFuncionario[contPessoa:]
 
-            populacao[contPessoa, :, contIndividuo] = individuo
+            populacao[contPessoa, :, contIndividuo] = funcionario
+
+        #no fim do laço acima eu tenho um indivíduo - aqui eu preciso verificar se ele é válido, se não for, tenho que gerar outro, até preencher a população toda com indivíduos válidos
 
     return populacao

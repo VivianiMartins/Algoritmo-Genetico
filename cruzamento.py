@@ -1,21 +1,23 @@
 import numpy as np
 from validaSolucao import validaSolucao
 
-def cruzamento(selecionados, populacao, dadosFuncionarios ,qtd_filhos):
+def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidade_blocos, turno):
     """
-    Cruzamento dos indivíduos selecionados utilizando 5 pontos de corte iniciais:
-    O bloco 1 para os farmacêuticos, e 4 blocos (quartos) para os auxiliares.
-    Dentro do bloco 1 há o sorteio entre todos, sem perder a ordem.
-    Os outros são sorteados entre eles, sem perder a ordem dos auxiliares.
+    Cruzamento dos indivíduos selecionados utilizando blocos:
+    O bloco 1 para os farmacêuticos: sorteio entre todos, sem perder a ordem.
+    O bloco dos auxiliares: sorteado entre a 'quantidade_blocos' definida,
+    mantendo a ordem dentro de cada bloco.
 
     Entrada:
-      selecionados: lista ou array contendo os índices dos individuos selecionados
+      selecionados: lista/array com os índices dos individuos selecionados
       populacao: array 3D [funcionários x dias x indivíduos]
-      adosFuncionario: array numpy com [Cargo, Turno, Inicio, Fim, Dias...]
+      dadosFuncionarios: array numpy com [Cargo, Turno, Inicio, Fim, Dias...]
       qtd_filhos: quantidade de filhos a serem gerados por par de pais
+      quantidade_blocos: em quantas partes os auxiliares serão divididos no cruzamento
+      turno: 1 para diurno, 0 para reescala (usa dias existentes)
 
     Saída:
-      filhos_finais: array 3D [funcionários x dias x total_de_filhos_gerados]
+      filhos_finais: array 3D [funcionários x dias x total_de_filhos_gerados_válidos]
     """
     individuosSelecionados = populacao[:, :, selecionados]
     farmaceuticos = 3
@@ -37,9 +39,9 @@ def cruzamento(selecionados, populacao, dadosFuncionarios ,qtd_filhos):
         auxiliares_2 = pai_2[farmaceuticos:, :]
 
         padroes_farm = np.random.randint(0, 2, size=(qtd_filhos, farmaceuticos)) # Sorteio interno do Bloco 1 (3 moedas, uma para cada farmacêutico)
-        padroes_aux = np.random.randint(0, 2, size=(qtd_filhos, 4))  # Sorteio dos 4 blocos de auxiliares (4 moedas, uma por bloco)
+        padroes_aux = np.random.randint(0, 2, size=(qtd_filhos, quantidade_blocos)) # Sorteio dos quantidade_blocos de auxiliares (quantidade_blocos moedas, uma por bloco)
 
-        quartos_linhas = np.array_split(np.arange(num_auxiliares), 4)
+        blocos_linhas = np.array_split(np.arange(num_auxiliares), quantidade_blocos) #divide a fila sequencial de auxiliares na quantidade_blocos
 
         for filho_idx in range(qtd_filhos):
             filho_farm = np.zeros_like(farms_1)
@@ -53,7 +55,7 @@ def cruzamento(selecionados, populacao, dadosFuncionarios ,qtd_filhos):
                     filho_farm[linha, :] = farms_2[linha, :]
 
            #auxiliares
-            for b, indices_bloco in enumerate(quartos_linhas):
+            for b, indices_bloco in enumerate(blocos_linhas):
                 if padroes_aux[filho_idx, b] == 0:
                     filho_aux[indices_bloco, :] = auxiliares_1[indices_bloco, :]
                 else:
@@ -61,10 +63,9 @@ def cruzamento(selecionados, populacao, dadosFuncionarios ,qtd_filhos):
 
             filho_completo = np.vstack((filho_farm, filho_aux))
 
-            eh_valido = validaSolucao(filho_completo, num_dias, 1, dadosFuncionarios, False)
+            eh_valido = validaSolucao(filho_completo, num_dias, 1, dadosFuncionarios, turno)
 
-            if eh_valido:
-                filhos_gerados.append(filho_completo)
+            filhos_gerados.append(eh_valido)
 
     if len(filhos_gerados) > 0:
         filhos_finais = np.stack(filhos_gerados, axis=2)
@@ -76,7 +77,5 @@ def cruzamento(selecionados, populacao, dadosFuncionarios ,qtd_filhos):
     else:
         filhos_finais = np.empty((num_funcionarios_total, num_dias, 0))
         print("Aviso Crítico: Nenhum filho gerado passou nas regras de validação!")
-
-    return filhos_finais
 
     return filhos_finais

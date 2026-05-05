@@ -43,10 +43,14 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno):
             # somaTemp = -np.inf #voltar quando população inicial estiver calibrada corretamente
             somaTemp = 0 # temporário, apenas para dar continuidade no algoritmo
         else:
+            # ---------------------------------------------------------
             # avaliando farmacêuticos
             parcelas_farm = 3.825 * ((1 / x_array) ** (-1 + x_array))
+            # ---------------------------------------------------------
 
+            # ---------------------------------------------------------
             # avaliando auxiliares
+            # ---------------------------------------------------------
             if turno == 1:
                 parcelas_aux = 5 * ((10 / y_array) ** (-24 + (y_array / 1.875)))
             else:
@@ -55,7 +59,9 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno):
             somaTemp += np.sum(parcelas_farm) + np.sum(parcelas_aux)
 
         if somaTemp != -np.inf:
-            # avaliando dias trabalhados por funcionário
+            # ---------------------------------------------------------
+            # avaliando total de dias trabalhados por funcionário (min e max)
+            # ---------------------------------------------------------
             maxPermitido = qtdeDiasDoMes/2
             limite_dias = math.ceil(maxPermitido)
             divisor = None
@@ -76,6 +82,11 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno):
                 else:
                     parcelas = 0.000000125 * ((1 / z_array) ** (-maxPermitido + (z_array / divisor)))
                     somaTemp += np.sum(parcelas)
+
+            # ---------------------------------------------------------
+            # Avaliar se trabalha em férias ou licença - fazer depois
+            # ---------------------------------------------------------
+            #já é invalidado com -infinito
 
         avaliacaoFitness[cont] = somaTemp
 

@@ -28,6 +28,8 @@ def funcaoPrincipal():
     turno = 1 # criar input para usuário, algo para o fim - 1 é diurno e 2 é noturno
     numDiasMes = 31
     diaReescala = 0 #ideal seria automatizar esta conta, algo para o fim
+    qtd_blocos = 10
+    qtd_filhos = 6
 
     if tipo not in [1, 2]:
         raise ValueError("Deve ser 1 para escala ou 2 para reescala")
@@ -46,7 +48,7 @@ def funcaoPrincipal():
     selecionados = selecao(resultadoFitness, num_selecionados=2)
     print(f"Índices dos indivíduos selecionados: {selecionados}")
     print(f"Fitness dos selecionados: {resultadoFitness[selecionados]}")
-    nova_populacao = cruzamento(selecionados, populacaoInicialDiurna, funcDiurnos, qtd_filhos = 6)
+    nova_populacao = cruzamento(selecionados, populacaoInicialDiurna, funcDiurnos, qtd_filhos, qtd_blocos, turno)
 
     #salvar_excel( populacao=nova_populacao, lista_nomes_cargos=nomesDiurnos, caminho_arquivo='população_cruzamento_diurna.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
 

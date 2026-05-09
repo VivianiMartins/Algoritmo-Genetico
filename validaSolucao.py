@@ -2,7 +2,7 @@ import numpy as np
 
 _cache_max_dias = {}
 
-def validaSolucao(individuo, qtdeDiasDoMes, tipo, dadosFuncionarios, turno):
+def validaSolucao(individuo, qtdeDiasDoMes, tipo, dadosFuncionarios, turno, farmaceuticos, auxiliares):
     """
     Verifica se a escala de um indivíduo (matriz 2D) é válida perante as regras.
 
@@ -11,18 +11,20 @@ def validaSolucao(individuo, qtdeDiasDoMes, tipo, dadosFuncionarios, turno):
       tipo: inteiro, tipo (1=escala, 2=reescala)
       dadosFuncionarios: array numpy com dados dos funcionários [Cargo, Turno, Inicio, Fim, Dias...]
       turno: 1 para diurno, 0 para reescala (usa dias existentes)
+      farmaceuticos: inteiro, total de farmacêuticos no turno
+      auxiliares: total de auxiliares no turno
 
     Saída:
       individuo (array 2D consertado)
     """
 
     ind_reparado = individuo.copy()
-    farmaceuticos = 3
+
     if (turno == 1):
-        maxAuxiliar = 24
+        maxAuxiliar = int(auxiliares // 2)
         minAuxiliar = 16
     else:
-        maxAuxiliar = 15
+        maxAuxiliar = int(auxiliares // 2)
         minAuxiliar = 12
 
     if tipo == 1:
@@ -78,13 +80,14 @@ def validaSolucao(individuo, qtdeDiasDoMes, tipo, dadosFuncionarios, turno):
                 if candidatos:
                     escolhido = np.random.choice(candidatos)
                     ind_reparado[escolhido, dia] = 1
+                #se não houver candidatos, não faz nada e espera-se que seja eliminado na próxima geração por causa do fitness baixo (0 ou -inf)
 
             # auxiliares
             aux_trabalhando = np.where(ind_reparado[farmaceuticos:, dia] == 1)[0]
             qtde_aux = len(aux_trabalhando)
 
             if qtde_aux > maxAuxiliar:
-                remover = np.random.choice(aux_trabalhando, size=(qtde_aux - maxAuxiliar), replace=False)
+                remover = np.random.choice(aux_trabalhando, size=(qtde_aux - maxAuxiliar), replace=False) #sorteia quem irá remover, pelo seu índice
                 ind_reparado[remover + farmaceuticos, dia] = 0
             elif qtde_aux < minAuxiliar:
                 falta = minAuxiliar - qtde_aux
@@ -103,6 +106,7 @@ def validaSolucao(individuo, qtdeDiasDoMes, tipo, dadosFuncionarios, turno):
                     qtd_adicionar = min(falta, len(candidatos))
                     escolhidos = np.random.choice(candidatos, size=qtd_adicionar, replace=False)
                     ind_reparado[escolhidos, dia] = 1
+                # se não houver candidatos, não faz nada e espera-se que seja eliminado na próxima geração por causa do fitness baixo (0 ou -inf)
 
         # ---------------------------------------------------------
         # férias ou licença - fazer depois

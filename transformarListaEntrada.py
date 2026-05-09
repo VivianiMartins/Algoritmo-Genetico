@@ -38,12 +38,16 @@ def transformarListaEntrada(listaFuncionarios):
     ESTRUTURA DA LISTA DO CSV (SEM CABEÇALHO): Nome | Cargo | Turno | Inicio | Fim | Dias do mês
     ESTRUTURA DA LISTA DE SAÍDA: Cargo (1=Farmacêutico ou 2=Auxiliar) | Turno (1=Diurno ou 2=Noturno) | Inicio (inteiro) | Fim (inteiro) | Dias do mês (0 ou 1)
 
-    Retorna:
+    Saída:
       funcionariosDiurnos: matriz [funcionários x colunas_dados]
       funcionariosNoturnos: matriz [funcionários x colunas_dados]
       numDiasMes: número de dias do mês
       nomesDiurnos: lista (nome, cargo_numerico, ultimoDiaMes) para diurnos
       nomesNoturnos: lista (nome, cargo_numerico, ultimoDiaMes) para noturnos
+      farmaceuticosDiurnos: total de farmaceuticos no turno diurno
+      farmaceuticosNoturnos: total de farmaceuticos no turno noturno
+      auxiliaresDiurnos: total de auxiliares no turno diurno
+      auxiliaresNoturnos: total de auxiliares no turno noturno
     """
     contDiurnos = 0
     contNoturnos = 0
@@ -54,6 +58,10 @@ def transformarListaEntrada(listaFuncionarios):
     numFuncionarios = numLinhas
     numDiasMes = numColunas - 5
     numColunasMatriz = 4 + numDiasMes
+    farmaceuticosDiurnos = 0
+    farmaceuticosNoturnos = 0
+    auxiliaresDiurnos = 0
+    auxiliaresNoturnos = 0
 
     matrizTemp_Diurnos = np.zeros((numFuncionarios, numColunasMatriz))
     matrizTemp_Noturnos = np.zeros((numFuncionarios, numColunasMatriz))
@@ -76,6 +84,11 @@ def transformarListaEntrada(listaFuncionarios):
         diasDoMes = [validar_valor_inteiro(d, "dia", d_idx + 1) for d_idx, d in enumerate(dias_raw)]
 
         if turno == "diurno":
+            if cargoNumerico == 1:
+                farmaceuticosDiurnos += 1
+            else:
+                auxiliaresDiurnos += 1
+
             matrizTemp_Diurnos[contDiurnos, 0] = cargoNumerico
             matrizTemp_Diurnos[contDiurnos, 1] = 1
             matrizTemp_Diurnos[contDiurnos, 2] = inicio
@@ -84,6 +97,11 @@ def transformarListaEntrada(listaFuncionarios):
             nomesDiurnos.append((nome, cargoNumerico, ultimoDiaMes))
             contDiurnos += 1
         else:
+            if cargoNumerico == 1:
+                farmaceuticosNoturnos += 1
+            else:
+                auxiliaresNoturnos += 1
+
             matrizTemp_Noturnos[contNoturnos, 0] = cargoNumerico
             matrizTemp_Noturnos[contNoturnos, 1] = 2
             matrizTemp_Noturnos[contNoturnos, 2] = inicio
@@ -95,4 +113,4 @@ def transformarListaEntrada(listaFuncionarios):
     funcionariosDiurnos = matrizTemp_Diurnos[:contDiurnos, :]
     funcionariosNoturnos = matrizTemp_Noturnos[:contNoturnos, :]
 
-    return funcionariosDiurnos, funcionariosNoturnos, numDiasMes, nomesDiurnos, nomesNoturnos
+    return funcionariosDiurnos, funcionariosNoturnos, numDiasMes, nomesDiurnos, nomesNoturnos, farmaceuticosDiurnos, farmaceuticosNoturnos, auxiliaresDiurnos, auxiliaresNoturnos

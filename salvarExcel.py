@@ -20,7 +20,7 @@ def _converter_cargo_numerico_para_texto(cargo_numerico):
     return mapa_cargos.get(cargo_numerico, "Desconhecido")
 
 
-def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_escalas.xlsx', num_dias_mes=int,
+def salvar_excel( populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminho_arquivo='populacao_escalas.xlsx', num_dias_mes=30,
                   salvar_completo=True, indice_individuo=None, somatorio=False):
     """
     Salva em arquivo Excel com opção de salvar população completa ou apenas uma escala.
@@ -29,8 +29,10 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
       populacao: array 3D [funcionários x dias x indivíduos]
       lista_nomes_cargos: lista de tuplas [(nome, cargo_numerico, ultimo_dia_mes_ant), ...]
                           ou lista de dicts [{'nome': str, 'cargo': int}, ...]
+      farmaceuticos: número total de farmacêuticos
+      auxiliares: número total de auxiliares
       caminho_arquivo: caminho do arquivo Excel a ser criado (padrão: 'populacao_escalas.xlsx')
-      num_dias_mes: número de dias no mês (padrão: 31)
+      num_dias_mes: número de dias no mês (padrão: 30)
       salvar_completo: bool - True = múltiplas abas | False = uma aba (padrão: True)
       indice_individuo: int - índice do indivíduo a salvar (0-based)
                         Se None e salvar_completo=False, usa o último indivíduo
@@ -100,7 +102,7 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
     )
 
     # ===== FUNÇÃO AUXILIAR: Cria uma aba com a escala =====
-    def criar_aba_escala(sheet, populacao_individuo, nomes, cargos, ultimo_dia_mes_anterior):
+    def criar_aba_escala(sheet, populacao_individuo, nomes, cargos, ultimo_dia_mes_anterior, farmaceuticos, auxiliares):
         """
         Cria uma aba formatada com a escala de um indivíduo.
 
@@ -109,6 +111,8 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
           populacao_individuo: array 2D [funcionários x dias]
           nomes: lista com nomes dos funcionários
           cargos: lista com cargos em texto dos funcionários
+          farmaceuticos: número total de farmacêuticos
+          auxiliares: número total de auxiliares
         """
         # ===== CABEÇALHO (LINHA 1) =====
         # Coluna A: Funcionário
@@ -146,9 +150,9 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
             sheet[f'{coluna_total}1'].fill = cor_cabecalho
             sheet[f'{coluna_total}1'].alignment = alinhamento_centro
 
-        # ===== DADOS DOS FUNCIONÁRIOS (LINHAS 3+) =====
+        # ===== DADOS DOS FUNCIONÁRIOS (LINHAS 2+) =====
         for func in range(qtdeFuncionarios):
-            linha = func + 3
+            linha = func + 2
 
             # Coluna A: Nome
             sheet[f'A{linha}'] = nomes[func]
@@ -206,35 +210,55 @@ def salvar_excel( populacao, lista_nomes_cargos, caminho_arquivo='populacao_esca
 
         # ===== RODAPÉ COM SOMATÓRIOS (Se ativo) =====
         if somatorio:
-            linha_rodape = qtdeFuncionarios + 3
+            # Identifica as linhas exatas onde vão ficar os somatórios no Excel
+            linha_rodape_farm = qtdeFuncionarios + 2
+            linha_rodape_aux = qtdeFuncionarios + 3
 
-            # Rótulo
-            sheet[f'A{linha_rodape}'] = 'Total de funcionário:'
-            sheet[f'A{linha_rodape}'].font = fonte_negrito
-            sheet[f'A{linha_rodape}'].fill = cor_soma
+            # Rótulos das linhas de somatório
+            sheet[f'A{linha_rodape_farm}'] = 'Total de farmacêuticos:'
+            sheet[f'A{linha_rodape_farm}'].font = fonte_negrito
+            sheet[f'A{linha_rodape_farm}'].fill = cor_soma
 
-            # Fórmulas de soma por dia
+            sheet[f'A{linha_rodape_aux}'] = 'Total de auxiliares:'
+            sheet[f'A{linha_rodape_aux}'].font = fonte_negrito
+            sheet[f'A{linha_rodape_aux}'].fill = cor_soma
+
+            # Define o intervalo de linhas (range) de cada grupo para a fórmula do Excel
+            inicio_farm = 2
+            fim_farm = 1 + farmaceuticos
+
+            inicio_aux = fim_farm + 1
+            fim_aux = fim_farm + auxiliares
+
             for dia in range(qtdeDias):
-                coluna = get_column_letter(dia + 4)  # D, E, ...
-                celula = sheet[f'{coluna}{linha_rodape}']
+                coluna = get_column_letter(dia + 4)  # Colunas D, E, etc.
 
-                primeira_linha = 2
-                ultima_linha = qtdeFuncionarios + 1
-                celula.value = f'=SUM({coluna}{primeira_linha}:{coluna}{ultima_linha})'
-                celula.data_type = 'f'
-                celula.alignment = alinhamento_centro
-                celula.font = Font(bold=True)
-                celula.fill = cor_soma
-                celula.border = borda
+                # Somatório Farmacêuticos
+                celula_farm = sheet[f'{coluna}{linha_rodape_farm}']
+                celula_farm.value = f'=SUM({coluna}{inicio_farm}:{coluna}{fim_farm})'
+                celula_farm.data_type = 'f'
+                celula_farm.alignment = alinhamento_centro
+                celula_farm.font = Font(bold=True)
+                celula_farm.fill = cor_soma
+                celula_farm.border = borda
 
-    # ===== LÓGICA PRINCIPAL: Salvar completo ou individual =====
-    if salvar_completo: # Para cada indivíduo, cria uma aba
+                # Somatório Auxiliares
+                celula_aux = sheet[f'{coluna}{linha_rodape_aux}']
+                celula_aux.value = f'=SUM({coluna}{inicio_aux}:{coluna}{fim_aux})'
+                celula_aux.data_type = 'f'
+                celula_aux.alignment = alinhamento_centro
+                celula_aux.font = Font(bold=True)
+                celula_aux.fill = cor_soma
+                celula_aux.border = borda
+
+    # ===== LÓGICA PRINCIPAL =====
+    if salvar_completo:
         for ind in range(qtdeIndividuos):
             sheet = workbook.create_sheet(title=f'Indivíduo_{ind + 1}')
-            criar_aba_escala(sheet, populacao[:, :, ind], nomes_funcionarios, cargos_texto, ultimo_dia_mes_anterior)
+            criar_aba_escala(sheet, populacao[:, :, ind], nomes_funcionarios, cargos_texto, ultimo_dia_mes_anterior, farmaceuticos, auxiliares)
         workbook.save(caminho_arquivo)
 
     else: # Salva apenas um indivíduo
         sheet = workbook.create_sheet(title='Escala')
-        criar_aba_escala(sheet, populacao[:, :, indice_individuo], nomes_funcionarios, cargos_texto, ultimo_dia_mes_anterior)
+        criar_aba_escala(sheet, populacao[:, :, indice_individuo], nomes_funcionarios, cargos_texto, ultimo_dia_mes_anterior, farmaceuticos, auxiliares)
         workbook.save(caminho_arquivo)

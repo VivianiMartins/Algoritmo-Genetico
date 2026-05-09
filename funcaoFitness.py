@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno):
+def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno, farmaceuticos, auxiliares):
     """
     Avaliação da população, atribuindo valores de acordo com que chega na solução ideal
 
@@ -10,18 +10,19 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno):
       qtdeDiasDoMes: número de dias no mês
       tipo: 1 para escala (gera do zero), 0 para reescala (usa dias existentes)
       turno: 1 para diurno, 0 para reescala (usa dias existentes)
+      farmaceuticos: total de farmacêuticos do turno
+      auxiliares: total de auxiliares do turno
 
     Saída:
           valorFitness: resultado da avaliação de cada indivíduo, array 1D [indivíduos]
     """
 
     avaliacaoFitness = np.zeros(populacao.shape[2])
-    farmaceuticos = 3
     if (turno == 1):
-        maxAuxiliar = 24
+        maxAuxiliar = int(auxiliares // 2)
         minAuxiliar = 16
     else:
-        maxAuxiliar = 15
+        maxAuxiliar = int(auxiliares // 2)
         minAuxiliar = 12
 
     for cont in range(populacao.shape[2]):
@@ -89,6 +90,5 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno):
             #já é invalidado com -infinito
 
         avaliacaoFitness[cont] = somaTemp
-
 
     return avaliacaoFitness

@@ -1,7 +1,7 @@
 import numpy as np
 from validaSolucao import validaSolucao
 
-def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidade_blocos, turno):
+def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidade_blocos, turno, farmaceuticos, auxiliares):
     """
     Cruzamento dos indivíduos selecionados utilizando blocos:
     O bloco 1 para os farmacêuticos: sorteio entre todos, sem perder a ordem.
@@ -15,18 +15,16 @@ def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidad
       qtd_filhos: quantidade de filhos a serem gerados por par de pais
       quantidade_blocos: em quantas partes os auxiliares serão divididos no cruzamento
       turno: 1 para diurno, 0 para reescala (usa dias existentes)
+      farmaceuticos: total de farmacêuticos no turno
+      auxiliares: total de auxiliares no turno
 
     Saída:
       filhos_finais: array 3D [funcionários x dias x total_de_filhos_gerados_válidos]
     """
     individuosSelecionados = populacao[:, :, selecionados]
-    farmaceuticos = 3
-
-    num_funcionarios_total = individuosSelecionados.shape[0]
     num_dias = individuosSelecionados.shape[1]
     num_pais_selecionados = individuosSelecionados.shape[2]
-    num_auxiliares = num_funcionarios_total - farmaceuticos
-
+    num_funcionarios_total = individuosSelecionados.shape[0]
     filhos_gerados = []
 
     for i in range(0, num_pais_selecionados - 1, 2):
@@ -41,7 +39,7 @@ def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidad
         padroes_farm = np.random.randint(0, 2, size=(qtd_filhos, farmaceuticos)) # Sorteio interno do Bloco 1 (3 moedas, uma para cada farmacêutico)
         padroes_aux = np.random.randint(0, 2, size=(qtd_filhos, quantidade_blocos)) # Sorteio dos quantidade_blocos de auxiliares (quantidade_blocos moedas, uma por bloco)
 
-        blocos_linhas = np.array_split(np.arange(num_auxiliares), quantidade_blocos) #divide a fila sequencial de auxiliares na quantidade_blocos
+        blocos_linhas = np.array_split(np.arange(auxiliares), quantidade_blocos) #divide a fila sequencial de auxiliares na quantidade_blocos
 
         for filho_idx in range(qtd_filhos):
             filho_farm = np.zeros_like(farms_1)
@@ -63,7 +61,7 @@ def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidad
 
             filho_completo = np.vstack((filho_farm, filho_aux))
 
-            eh_valido = validaSolucao(filho_completo, num_dias, 1, dadosFuncionarios, turno)
+            eh_valido = validaSolucao(filho_completo, num_dias, 1, dadosFuncionarios, turno, farmaceuticos, auxiliares)
 
             filhos_gerados.append(eh_valido)
 

@@ -2,20 +2,9 @@ import numpy as np
 
 _cache_max_dias = {}
 
-def validaSolucao(individuo, qtdeDiasDoMes, tipo, dadosFuncionarios, turno, farmaceuticos, auxiliares):
+def validaSolucao(individuo, numDiasMes, tipo, dadosFuncionarios, turno, farmaceuticos, auxiliares):
     """
-    Verifica se a escala de um indivíduo (matriz 2D) é válida perante as regras.
-
-    Entrada:
-      individuo: array [funcionarios x dias]
-      tipo: inteiro, tipo (1=escala, 2=reescala)
-      dadosFuncionarios: array numpy com dados dos funcionários [Cargo, Turno, Inicio, Fim, Dias...]
-      turno: 1 para diurno, 0 para reescala (usa dias existentes)
-      farmaceuticos: inteiro, total de farmacêuticos no turno
-      auxiliares: total de auxiliares no turno
-
-    Saída:
-      individuo (array 2D consertado)
+    Verifica se a escala de um indivíduo (matriz 2D) é válida perante as regras e retorna individuo (array 2D consertado)
     """
 
     ind_reparado = individuo.copy()
@@ -40,9 +29,9 @@ def validaSolucao(individuo, qtdeDiasDoMes, tipo, dadosFuncionarios, turno, farm
         # ---------------------------------------------------------
         # verificação do total de escalas por mês
         # ---------------------------------------------------------
-        if qtdeDiasDoMes not in _cache_max_dias:
-            _cache_max_dias[qtdeDiasDoMes] = int(np.ceil(qtdeDiasDoMes / 2))
-        max_dias = _cache_max_dias[qtdeDiasDoMes]
+        if numDiasMes not in _cache_max_dias:
+            _cache_max_dias[numDiasMes] = int(np.ceil(numDiasMes / 2))
+        max_dias = _cache_max_dias[numDiasMes]
         somas = np.sum(ind_reparado, axis=1)
         excesso = somas - max_dias #retorna vetor com quantos dias foram excedidos por cada funcionário (negativo ou zero se não excedeu)
         se_excedeu = excesso > 0 #vetor booleano
@@ -61,7 +50,7 @@ def validaSolucao(individuo, qtdeDiasDoMes, tipo, dadosFuncionarios, turno, farm
         # ---------------------------------------------------------
         num_auxiliares = ind_reparado.shape[0] - farmaceuticos
 
-        for dia in range(qtdeDiasDoMes): #validacao por dia
+        for dia in range(numDiasMes): #validacao por dia
             #farmacêuticos
             farm_trabalhando = np.where(ind_reparado[:farmaceuticos, dia] == 1)[0]
             qtde_farm = len(farm_trabalhando)
@@ -73,7 +62,7 @@ def validaSolucao(individuo, qtdeDiasDoMes, tipo, dadosFuncionarios, turno, farm
                 candidatos = []
                 for f in range(farmaceuticos): #tenta achar candidatos que não tenham trabalhado no dia anterior ou no dia seguinte, e que não tenham atingido o limite de dias trabalhados no mês
                     ontem = array_ultimos_dias[f] if dia == 0 else ind_reparado[f, dia - 1]
-                    amanha = 0 if dia == qtdeDiasDoMes - 1 else ind_reparado[f, dia + 1]
+                    amanha = 0 if dia == numDiasMes - 1 else ind_reparado[f, dia + 1]
                     if ontem == 0 and amanha == 0 and np.sum(ind_reparado[f, :]) < max_dias:
                         candidatos.append(f)
 
@@ -98,7 +87,7 @@ def validaSolucao(individuo, qtdeDiasDoMes, tipo, dadosFuncionarios, turno, farm
 
                     if ind_reparado[idx, dia] == 0:
                         ontem = array_ultimos_dias[idx] if dia == 0 else ind_reparado[idx, dia - 1]
-                        amanha = 0 if dia == qtdeDiasDoMes - 1 else ind_reparado[idx, dia + 1]
+                        amanha = 0 if dia == numDiasMes - 1 else ind_reparado[idx, dia + 1]
                         if ontem == 0 and amanha == 0 and np.sum(ind_reparado[idx, :]) < max_dias:
                             candidatos.append(idx)
 

@@ -3,14 +3,7 @@ import numpy as np
 def validar_valor_inteiro(valor, nome, indice=None):
     """
     Valida e converte um valor para inteiro, com tratamento robusto de tipos.
-
-    Args:
-        valor: Valor a ser validado (int, float, str)
-        nome: Nome do campo para mensagens de erro (ex: "inicio", "fim", "dia")
-        indice: Índice opcional para dias (ex: 1 para dia 1)
-
-    Returns:
-        int: Valor convertido ou 0 em caso de erro
+    Valor convertido ou 0 em caso de erro
     """
     try:
         if isinstance(valor, int):
@@ -37,8 +30,6 @@ def transformarListaEntrada(listaFuncionarios):
     Transforma a lista de funcionários em matrizes separadas por turno
     ESTRUTURA DA LISTA DO CSV (SEM CABEÇALHO): Nome | Cargo | Turno | Inicio | Fim | Dias do mês
     ESTRUTURA DA LISTA DE SAÍDA: Cargo (1=Farmacêutico ou 2=Auxiliar) | Turno (1=Diurno ou 2=Noturno) | Inicio (inteiro) | Fim (inteiro) | Dias do mês (0 ou 1)
-
-    Saída:
       funcionariosDiurnos: matriz [funcionários x colunas_dados]
       funcionariosNoturnos: matriz [funcionários x colunas_dados]
       numDiasMes: número de dias do mês

@@ -1,28 +1,14 @@
 import numpy as np
 from validaSolucao import validaSolucao
 
-def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidade_blocos, turno, farmaceuticos, auxiliares):
+def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidade_blocos, turno, farmaceuticos, auxiliares, numDiasMes):
     """
     Cruzamento dos indivíduos selecionados utilizando blocos:
     O bloco 1 para os farmacêuticos: sorteio entre todos, sem perder a ordem.
     O bloco dos auxiliares: sorteado entre a 'quantidade_blocos' definida,
     mantendo a ordem dentro de cada bloco.
-
-    Entrada:
-      selecionados: lista/array com os índices dos individuos selecionados
-      populacao: array 3D [funcionários x dias x indivíduos]
-      dadosFuncionarios: array numpy com [Cargo, Turno, Inicio, Fim, Dias...]
-      qtd_filhos: quantidade de filhos a serem gerados por par de pais
-      quantidade_blocos: em quantas partes os auxiliares serão divididos no cruzamento
-      turno: 1 para diurno, 0 para reescala (usa dias existentes)
-      farmaceuticos: total de farmacêuticos no turno
-      auxiliares: total de auxiliares no turno
-
-    Saída:
-      filhos_finais: array 3D [funcionários x dias x total_de_filhos_gerados_válidos]
     """
     individuosSelecionados = populacao[:, :, selecionados]
-    num_dias = individuosSelecionados.shape[1]
     num_pais_selecionados = individuosSelecionados.shape[2]
     num_funcionarios_total = individuosSelecionados.shape[0]
     filhos_gerados = []
@@ -61,7 +47,7 @@ def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidad
 
             filho_completo = np.vstack((filho_farm, filho_aux))
 
-            eh_valido = validaSolucao(filho_completo, num_dias, 1, dadosFuncionarios, turno, farmaceuticos, auxiliares)
+            eh_valido = validaSolucao(filho_completo, numDiasMes, 1, dadosFuncionarios, turno, farmaceuticos, auxiliares)
 
             filhos_gerados.append(eh_valido)
 
@@ -73,7 +59,7 @@ def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidad
             print(f"Aviso do Cruzamento: Foram gerados {filhos_finais.shape[2]} filhos válidos "
                   f"de um total esperado de {qtde_total_filhos_esperada}.")
     else:
-        filhos_finais = np.empty((num_funcionarios_total, num_dias, 0))
+        filhos_finais = np.empty((num_funcionarios_total, numDiasMes, 0))
         print("Aviso Crítico: Nenhum filho gerado passou nas regras de validação!")
 
     return filhos_finais

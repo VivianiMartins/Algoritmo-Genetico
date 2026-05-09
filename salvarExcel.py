@@ -24,21 +24,6 @@ def salvar_excel( populacao, lista_nomes_cargos, farmaceuticos, auxiliares, cami
                   salvar_completo=True, indice_individuo=None, somatorio=False):
     """
     Salva em arquivo Excel com opção de salvar população completa ou apenas uma escala.
-
-    Entrada:
-      populacao: array 3D [funcionários x dias x indivíduos]
-      lista_nomes_cargos: lista de tuplas [(nome, cargo_numerico, ultimo_dia_mes_ant), ...]
-                          ou lista de dicts [{'nome': str, 'cargo': int}, ...]
-      farmaceuticos: número total de farmacêuticos
-      auxiliares: número total de auxiliares
-      caminho_arquivo: caminho do arquivo Excel a ser criado (padrão: 'populacao_escalas.xlsx')
-      num_dias_mes: número de dias no mês (padrão: 30)
-      salvar_completo: bool - True = múltiplas abas | False = uma aba (padrão: True)
-      indice_individuo: int - índice do indivíduo a salvar (0-based)
-                        Se None e salvar_completo=False, usa o último indivíduo
-      somatorio: bool - True = adiciona fórmulas de soma | False = sem somatórios (padrão: False)
-
-    Saída:
       Arquivo Excel com abas conforme a flag:
       - Se salvar_completo=True: múltiplas abas ("Indivíduo_1", "Indivíduo_2", ...)
       - Se salvar_completo=False: uma aba ("Escala")

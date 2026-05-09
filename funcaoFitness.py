@@ -1,20 +1,9 @@
 import math
 import numpy as np
 
-def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno, farmaceuticos, auxiliares):
+def funcaoFitness(populacao, numDiasMes, tipo, turno, farmaceuticos, auxiliares):
     """
     Avaliação da população, atribuindo valores de acordo com que chega na solução ideal
-
-    Entrada:
-      populacao: array 3D [funcionários x dias x indivíduos]
-      qtdeDiasDoMes: número de dias no mês
-      tipo: 1 para escala (gera do zero), 0 para reescala (usa dias existentes)
-      turno: 1 para diurno, 0 para reescala (usa dias existentes)
-      farmaceuticos: total de farmacêuticos do turno
-      auxiliares: total de auxiliares do turno
-
-    Saída:
-          valorFitness: resultado da avaliação de cada indivíduo, array 1D [indivíduos]
     """
 
     avaliacaoFitness = np.zeros(populacao.shape[2])
@@ -33,8 +22,8 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno, farmaceuticos, auxiliar
         farmaceuticosTemp = individuo[:farmaceuticos, :]
         auxiliaresTemp = individuo[farmaceuticos:, :]
 
-        if auxiliaresTemp.shape[0] != (maxAuxiliar * 2):
-            raise ValueError("Número de auxiliares na população não corresponde ao esperado para o turno.")
+        if auxiliaresTemp.shape[0] != auxiliares or farmaceuticosTemp.shape[0] != farmaceuticos:
+            raise ValueError("Número de auxiliares ou farmacêuticos na população não corresponde ao esperado para o turno.")
 
         x_array = np.sum(farmaceuticosTemp, axis=0) #0 são as colunas
         y_array = np.sum(auxiliaresTemp, axis=0)
@@ -42,7 +31,7 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno, farmaceuticos, auxiliar
         if (np.any(x_array == 0) or np.any(x_array == 3) or np.any(x_array == 2) or
             np.any(y_array == 0) or np.any(y_array < minAuxiliar) or np.any(y_array > maxAuxiliar)):
             # somaTemp = -np.inf #voltar quando população inicial estiver calibrada corretamente
-            somaTemp = 0 # temporário, apenas para dar continuidade no algoritmo
+            somaTemp = somaTemp - 25000000.9999 # temporário, apenas para dar continuidade no algoritmo
         else:
             # ---------------------------------------------------------
             # avaliando farmacêuticos
@@ -63,7 +52,7 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno, farmaceuticos, auxiliar
             # ---------------------------------------------------------
             # avaliando total de dias trabalhados por funcionário (min e max)
             # ---------------------------------------------------------
-            maxPermitido = qtdeDiasDoMes/2
+            maxPermitido = numDiasMes/2
             limite_dias = math.ceil(maxPermitido)
             divisor = None
             if maxPermitido == 14:
@@ -79,7 +68,7 @@ def funcaoFitness(populacao, qtdeDiasDoMes, tipo, turno, farmaceuticos, auxiliar
                 z_array = np.sum(individuo, axis=1) #1 são as linhas
                 if np.any(z_array == 0) or np.any(z_array > limite_dias):
                     #somaTemp = -np.inf #voltar quando população inicial estiver calibrada corretamente
-                    somaTemp = 0 #temporário, apenas para dar continuidade no algoritmo
+                    somaTemp = somaTemp - 25000000.99999 #temporário, apenas para dar continuidade no algoritmo
                 else:
                     parcelas = 0.000000125 * ((1 / z_array) ** (-maxPermitido + (z_array / divisor)))
                     somaTemp += np.sum(parcelas)

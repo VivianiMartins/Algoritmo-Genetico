@@ -2,18 +2,12 @@ import numpy as np
 
 def selecao(resultadoFitness, qtd_pais):
     """
-        Seleção da população, utilizando a estratégia de seleção por roleta
-
-        Entrada:
-          resultadoFitness: array 1D com os valores de fitness de cada indivíduo da população
-          qtd_pais: quantidade de indivíduos a selecionar, sempre PAR
-
-        Saída:
-              selecionados: array contendo os indivíduos selecionados
-        """
+    Seleção da população, utilizando a estratégia de seleção por roleta
+    """
 
     probabilidades = np.zeros(len(resultadoFitness))
-    validos_mask = resultadoFitness != -np.inf #garante -inf com probabilidade 0
+    #validos_mask = resultadoFitness != -np.inf #garante -inf com probabilidade 0
+    validos_mask = resultadoFitness >= 0 #garante -inf e negativos com probabilidade 0, considerando que a função de fitness pode retornar valores negativos para soluções ruins
 
     if np.sum(validos_mask) < qtd_pais:
         raise ValueError("Erro: Não há indivíduos válidos suficientes para a seleção!")
@@ -22,7 +16,7 @@ def selecao(resultadoFitness, qtd_pais):
 
     soma_total = np.sum(fitness_validos)
     if soma_total == 0:
-        soma_total += 1e-10  # Evita divisão por zero
+        soma_total += 0.0000000000000000001  # Evita divisão por zero
 
     probabilidades[validos_mask] = fitness_validos / soma_total
     indices_populacao = np.arange(len(resultadoFitness))

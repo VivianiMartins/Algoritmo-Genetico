@@ -1,12 +1,16 @@
 import numpy as np
+
+from funcaoFitnessNova import funcaoFitnessNova
 from geraPopulacaoInicial import geraPopulacaoInicial
 from funcaoFitness import funcaoFitness
 from mutacao import mutacao
 from salvarExcel import salvar_excel
-from selecao import selecao
+from selecaoRoleta import selecaoRoleta
 from cruzamento import cruzamento
+from selecaoElite import selecaoElite
 
-def algoritmoGenetico(funcionarios, qtdeIndividuos, numDiasMes, tipo, diaReescala, turno, qtd_blocos, geracoes, nomes, farmaceuticos, auxiliares, qtd_pais):
+
+def algoritmoGenetico(funcionarios, qtdeIndividuos, numDiasMes, tipo, diaReescala, turno, qtd_blocos, geracoes, nomes, farmaceuticos, auxiliares, qtd_pais, penalidade, fitness, selecao):
     """
     Executa o Algoritmo Genético completo ao longo de várias gerações.
     """
@@ -14,8 +18,8 @@ def algoritmoGenetico(funcionarios, qtdeIndividuos, numDiasMes, tipo, diaReescal
     # ---------------------------------------------------------
     # População inicial
     # ---------------------------------------------------------
-    populacaoAtual = geraPopulacaoInicial(funcionarios, qtdeIndividuos, numDiasMes, tipo, diaReescala)
-    salvar_excel( populacao=populacaoAtual, lista_nomes_cargos=nomes, farmaceuticos=farmaceuticos, auxiliares=auxiliares, caminho_arquivo='0_população_inicial.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
+    populacao_atual = geraPopulacaoInicial(funcionarios, qtdeIndividuos, numDiasMes, tipo, diaReescala)
+    salvar_excel( populacao=populacao_atual, lista_nomes_cargos=nomes, farmaceuticos=farmaceuticos, auxiliares=auxiliares, caminho_arquivo='0_população_inicial.xlsx', num_dias_mes=numDiasMes, salvar_completo=True, somatorio=True)
 
     historico_individuos = []
     historico_fitness = []
@@ -36,12 +40,17 @@ def algoritmoGenetico(funcionarios, qtdeIndividuos, numDiasMes, tipo, diaReescal
         # ---------------------------------------------------------
         # Ftness
         # ---------------------------------------------------------
-        resultadoFitness = funcaoFitness(populacaoAtual, numDiasMes, tipo, turno, farmaceuticos, auxiliares)
-        historico_fitness_todos.append(resultadoFitness.copy())
+        resultado_fitness = []
+        if fitness==1:
+            resultado_fitness = funcaoFitness(populacao_atual, numDiasMes, tipo, turno, farmaceuticos, auxiliares)
+        elif fitness == 2:
+            resultado_fitness = funcaoFitnessNova(populacao_atual, numDiasMes, tipo, turno, farmaceuticos, auxiliares, penalidade=penalidade)
 
-        melhor_idx = np.argmax(resultadoFitness)  # Pega o índice da maior nota
-        melhor_fitness_geracao = resultadoFitness[melhor_idx]
-        melhor_individuo_geracao = populacaoAtual[:, :, melhor_idx].copy()
+        historico_fitness_todos.append(resultado_fitness.copy())
+
+        melhor_idx = np.argmax(resultado_fitness)  # Pega o índice da maior nota
+        melhor_fitness_geracao = resultado_fitness[melhor_idx]
+        melhor_individuo_geracao = populacao_atual[:, :, melhor_idx].copy()
 
         historico_individuos.append(melhor_individuo_geracao)
         historico_fitness.append(melhor_fitness_geracao)
@@ -56,19 +65,24 @@ def algoritmoGenetico(funcionarios, qtdeIndividuos, numDiasMes, tipo, diaReescal
         # ---------------------------------------------------------
         # Seleção
         # ---------------------------------------------------------
-        selecionados = selecao(resultadoFitness, qtd_pais)
+        selecionados = []
+        if selecao == 1:
+            selecionados = selecaoRoleta(resultado_fitness, qtd_pais)
+        elif selecao == 2:
+            selecionados = selecaoElite(resultado_fitness, qtd_pais)
+
         historico_selecionados_indices.append(selecionados)
-        historico_selecionados_fitness.append(resultadoFitness[selecionados])
+        historico_selecionados_fitness.append(resultado_fitness[selecionados])
 
         if geracao < geracoes - 1:
             # ---------------------------------------------------------
             # Cruzamento
             # ---------------------------------------------------------
-            populacaoAtual = cruzamento(selecionados, populacaoAtual, funcionarios, qtdeIndividuos, qtd_blocos, turno, farmaceuticos, auxiliares, numDiasMes)
+            populacao_atual = cruzamento(selecionados, populacao_atual, funcionarios, qtdeIndividuos, qtd_blocos, turno, farmaceuticos, auxiliares, numDiasMes)
             # ---------------------------------------------------------
             # Mutação - ainda pensando em como fazer
             # ---------------------------------------------------------
-            populacaoAtual = mutacao(populacaoAtual, funcionarios, turno, farmaceuticos, auxiliares, numDiasMes)
+            populacao_atual = mutacao(populacao_atual, funcionarios, turno, farmaceuticos, auxiliares, numDiasMes)
 
-    return (populacaoAtual, historico_individuos, historico_fitness, melhor_individuo_global, historico_selecionados_fitness, historico_selecionados_indices, historico_melhor_idx, melhor_geracao_global,
+    return (populacao_atual, historico_individuos, historico_fitness, melhor_individuo_global, historico_selecionados_fitness, historico_selecionados_indices, historico_melhor_idx, melhor_geracao_global,
             melhor_id_global, historico_fitness_todos)

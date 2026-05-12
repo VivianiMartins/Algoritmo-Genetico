@@ -1,8 +1,7 @@
 import numpy as np
-from processarLicensa import processar_licensa
 
 _cache_max_dias = {}
-_cache_diasDisponiveis = {}  #temporário até usar processa_licensa
+_cache_diasDisponiveis = {}
 
 def geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, qtdeDiasDoMes, tipo, diaReescala):
     """
@@ -57,7 +56,5 @@ def geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, qtdeDiasDoMes, tip
                 funcionario = dadosFuncionario[contPessoa:]
 
             populacao[contPessoa, :, contIndividuo] = funcionario
-
-        #no fim do laço acima eu tenho um indivíduo - aqui eu preciso verificar se ele é válido, se não for, tenho que gerar outro, até preencher a população toda com indivíduos válidos
 
     return populacao

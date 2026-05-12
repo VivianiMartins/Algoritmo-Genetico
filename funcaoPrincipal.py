@@ -19,7 +19,7 @@ def funcaoPrincipal():
     # Algoritmo genético
     # =========================================================================
     qtdeIndividuos = 30
-    geracoes = 200
+    geracoes = 100
     qtd_pais = 2
     qtd_blocos = 10
     tipo = 1
@@ -39,7 +39,7 @@ def funcaoPrincipal():
     farm_turno = farmaceuticosDiurnos if turno == 1 else farmaceuticosNoturnos
     aux_turno = auxiliaresDiurnos if turno == 1 else auxiliaresNoturnos
 
-    populacaoFinal, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit, hist_sel_idx, hist_melhor_idx, geracao_campea, id_campeao = algoritmoGenetico( funcionarios_turno, qtdeIndividuos, numDiasMes, tipo, diaReescala, turno, qtd_blocos, geracoes, nomes_turno, farm_turno, aux_turno, qtd_pais)
+    populacaoFinal, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit, hist_sel_idx, hist_melhor_idx, geracao_campea, id_campeao, historico_fitness_todos = algoritmoGenetico( funcionarios_turno, qtdeIndividuos, numDiasMes, tipo, diaReescala, turno, qtd_blocos, geracoes, nomes_turno, farm_turno, aux_turno, qtd_pais)
 
     tempoTotal = time.time() - tempoInicio
     print(f'\nTempo Total: {tempoTotal:.2f} segundos ({tempoTotal / 60:.2f} minutos)')
@@ -152,6 +152,41 @@ def funcaoPrincipal():
         plt.tight_layout()  # Salva a imagem e mostra na tela
         plt.savefig('4_grafico_evolucao_fitness.png', dpi=300)
         plt.show()
+
+    # ---------------------------------------------------------
+    # Historico total da fitness
+    # ---------------------------------------------------------
+    print("Salvando histórico completo de fitness...")
+    df_fitness = pd.DataFrame(historico_fitness_todos)
+    df_fitness.index = [f"Geração {i + 1}" for i in range(len(historico_fitness_todos))]
+    df_fitness.columns = [f"Indivíduo {i}" for i in range(qtdeIndividuos)]
+    df_fitness.to_excel('5_historico_todos_fitness.xlsx', index_label="Geração/Indivíduo")
+
+    print("Gerando gráfico de dispersão de toda a população...")
+    plt.figure(figsize=(14, 7))
+    geracoes_eixo_x = list(range(1, len(historico_fitness_todos) + 1))
+    medias_geracao = []
+
+    for i, geracao_x in enumerate(geracoes_eixo_x):
+        notas_geracao = historico_fitness_todos[i]
+        medias_geracao.append(np.mean(notas_geracao))
+        x_vals = [geracao_x] * len(notas_geracao)
+        plt.scatter(x_vals, notas_geracao, color='gray', alpha=0.5, edgecolor='black', s=25, zorder=2)
+
+    plt.plot(geracoes_eixo_x, medias_geracao, color='red', linestyle='--', linewidth=2, label='Média da População', zorder=3)
+    plt.plot(geracoes_eixo_x, historico_fitness, color='#4472C4', marker='o', markersize=4, linestyle='-', linewidth=2, label='Melhor da Geração', zorder=4)
+    plt.title('Distribuição do Fitness de Todos os Indivíduos por Geração', fontsize=14, fontweight='bold')
+    plt.xlabel('Gerações', fontsize=12)
+    plt.ylabel('Pontuação (Fitness)', fontsize=12)
+    plt.legend(loc='lower right', framealpha=0.9)
+    plt.ticklabel_format(style='plain', axis='y')
+    plt.gca().xaxis.set_major_locator(ticker.MaxNLocator(integer=True, nbins=20))
+    y_min, y_max = plt.ylim()
+    plt.ylim(y_min - (y_max - y_min) * 0.05, y_max + (y_max - y_min) * 0.1)
+    plt.grid(True, linestyle='--', alpha=0.5, zorder=1)
+    plt.tight_layout()
+    plt.savefig('6_grafico_dispersao_populacao.png', dpi=300)
+    plt.show()
 
 if __name__ == "__main__":  # Verifica se o script está sendo executado diretamente
     funcaoPrincipal()  # Chama a função principal

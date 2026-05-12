@@ -23,6 +23,7 @@ def algoritmoGenetico(funcionarios, qtdeIndividuos, numDiasMes, tipo, diaReescal
     historico_selecionados_fitness = []
     historico_selecionados_indices = []
     historico_melhor_idx = []
+    historico_fitness_todos = []
 
     melhor_individuo_global = None
     melhor_fitness_global = -np.inf  # Começa com o menor valor possível
@@ -36,6 +37,7 @@ def algoritmoGenetico(funcionarios, qtdeIndividuos, numDiasMes, tipo, diaReescal
         # Ftness
         # ---------------------------------------------------------
         resultadoFitness = funcaoFitness(populacaoAtual, numDiasMes, tipo, turno, farmaceuticos, auxiliares)
+        historico_fitness_todos.append(resultadoFitness.copy())
 
         melhor_idx = np.argmax(resultadoFitness)  # Pega o índice da maior nota
         melhor_fitness_geracao = resultadoFitness[melhor_idx]
@@ -68,4 +70,5 @@ def algoritmoGenetico(funcionarios, qtdeIndividuos, numDiasMes, tipo, diaReescal
             # ---------------------------------------------------------
             populacaoAtual = mutacao(populacaoAtual, funcionarios, turno, farmaceuticos, auxiliares, numDiasMes)
 
-    return populacaoAtual, historico_individuos, historico_fitness, melhor_individuo_global, historico_selecionados_fitness, historico_selecionados_indices, historico_melhor_idx, melhor_geracao_global, melhor_id_global
+    return (populacaoAtual, historico_individuos, historico_fitness, melhor_individuo_global, historico_selecionados_fitness, historico_selecionados_indices, historico_melhor_idx, melhor_geracao_global,
+            melhor_id_global, historico_fitness_todos)

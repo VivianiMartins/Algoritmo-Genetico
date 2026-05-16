@@ -19,16 +19,18 @@ def funcaoPrincipal():
     # Algoritmo genético
     # =========================================================================
     qtdeIndividuos = 30
-    geracoes = 100
+    geracoes = 500
     qtd_pais = 2
-    qtd_blocos = 2
+    qtd_blocos = 10
     tipo = 1
     turno = 1
     numDiasMes = 30
     diaReescala = 0
+
     penalidade = True #False para não aplicar penalidade e True para aplicar penalidade
     fitness = 2 #1 antigo (valores muito altos) 2 normalizada (com ou sem penalidade)
     selecao = 2 #1 para Roleta e 2 para Elitismo
+    cruzamento = 2 #1 para cruzamento com bloco, 2 para cruzamento bloco mantendo o melhor global (também na mutação)
 
     if tipo not in [1, 2]:
         raise ValueError("Deve ser 1 para escala ou 2 para reescala")
@@ -42,7 +44,9 @@ def funcaoPrincipal():
     farm_turno = farmaceuticosDiurnos if turno == 1 else farmaceuticosNoturnos
     aux_turno = auxiliaresDiurnos if turno == 1 else auxiliaresNoturnos
 
-    populacaoFinal, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit, hist_sel_idx, hist_melhor_idx, geracao_campea, id_campeao, historico_fitness_todos = algoritmoGenetico( funcionarios_turno, qtdeIndividuos, numDiasMes, tipo, diaReescala, turno, qtd_blocos, geracoes, nomes_turno, farm_turno, aux_turno, qtd_pais, penalidade, fitness, selecao)
+    (populacaoFinal, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit, hist_sel_idx, hist_melhor_idx, geracao_campea, id_campeao,
+     historico_fitness_todos) = algoritmoGenetico( funcionarios_turno, qtdeIndividuos, numDiasMes, tipo, diaReescala, turno, qtd_blocos, geracoes, nomes_turno,
+                                                   farm_turno, aux_turno, qtd_pais, penalidade, fitness, selecao, cruzamento)
 
     tempoTotal = time.time() - tempoInicio
     print(f'\nTempo Total: {tempoTotal:.2f} segundos ({tempoTotal / 60:.2f} minutos)')

@@ -1,7 +1,7 @@
 import numpy as np
 from validaSolucao import validaSolucao
 
-def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidade_blocos, turno, farmaceuticos, auxiliares, numDiasMes):
+def cruzamentoBlocoMelhorGlobal(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidade_blocos, turno, farmaceuticos, auxiliares, numDiasMes, melhor_individuo_global):
     """
     Cruzamento dos indivíduos selecionados utilizando blocos:
     O bloco 1 para os farmacêuticos: sorteio entre todos, sem perder a ordem.
@@ -13,6 +13,8 @@ def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidad
     num_funcionarios_total = individuosSelecionados.shape[0]
     filhos_gerados = []
 
+    qtd_filhos_a_gerar = qtd_filhos - 1
+
     for i in range(0, num_pais_selecionados - 1, 2):
         pai_1 = individuosSelecionados[:, :, i]
         pai_2 = individuosSelecionados[:, :, i+1]
@@ -22,12 +24,12 @@ def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidad
         farms_2 = pai_2[:farmaceuticos, :]
         auxiliares_2 = pai_2[farmaceuticos:, :]
 
-        padroes_farm = np.random.randint(0, 2, size=(qtd_filhos, farmaceuticos)) # Sorteio interno do Bloco 1 (3 moedas, uma para cada farmacêutico)
-        padroes_aux = np.random.randint(0, 2, size=(qtd_filhos, quantidade_blocos)) # Sorteio dos quantidade_blocos de auxiliares (quantidade_blocos moedas, uma por bloco)
+        padroes_farm = np.random.randint(0, 2, size=(qtd_filhos_a_gerar, farmaceuticos)) # Sorteio interno do Bloco 1 (3 moedas, uma para cada farmacêutico)
+        padroes_aux = np.random.randint(0, 2, size=(qtd_filhos_a_gerar, quantidade_blocos)) # Sorteio dos quantidade_blocos de auxiliares (quantidade_blocos moedas, uma por bloco)
 
         blocos_linhas = np.array_split(np.arange(auxiliares), quantidade_blocos) #divide a fila sequencial de auxiliares na quantidade_blocos
 
-        for filho_idx in range(qtd_filhos):
+        for filho_idx in range(qtd_filhos_a_gerar):
             filho_farm = np.zeros_like(farms_1)
             filho_aux = np.zeros_like(auxiliares_1)
 
@@ -50,6 +52,8 @@ def cruzamento(selecionados, populacao, dadosFuncionarios, qtd_filhos, quantidad
             eh_valido = validaSolucao(filho_completo, numDiasMes, 1, dadosFuncionarios, turno, farmaceuticos, auxiliares)
 
             filhos_gerados.append(eh_valido)
+
+    filhos_gerados.append(melhor_individuo_global)
 
     if len(filhos_gerados) > 0:
         filhos_finais = np.stack(filhos_gerados, axis=2)

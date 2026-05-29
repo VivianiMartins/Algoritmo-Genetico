@@ -3,36 +3,29 @@ import numpy as np
 _cache_max_dias = {}
 _cache_diasDisponiveis = {}
 
-def geraPopulacaoInicial(funcionariosDoTurno, qtdeIndividuos, qtdeDiasDoMes, tipo, diaReescala):
+def geraPopulacaoInicial(funcionarios, qtde_individuos, num_dias_mes, tipo, dia_reescala_inicio, dia_reescala_fim):
     """
-    Gera população inicial para algoritmo genético de escalas de trabalho, dimensão:
-    matriz 3D [qtdeFuncionarios x qtdeDiasDoMes x qtdeIndividuos]
-    Cada fatia populacao[:,:,i] é um indivíduo (escala completa)
-    Valores: 0 (não trabalha) ou 1 (trabalha)
-    População não randômica, pois respeita:
-            Não há 1's consecultivos
-            Verifica o último dia do mês anterior
-            Não ultrapassa o máximo de dias trabalhados por mês
+    Gera população inicial para algoritmo genético de escalas de trabalho, dimensão: (funcionarios, num_dias_mes, qtde_individuos)
     """
 
-    if qtdeDiasDoMes not in _cache_max_dias:
-        _cache_max_dias[qtdeDiasDoMes] = int(np.ceil(qtdeDiasDoMes / 2))
-    maxDiasTrabalhados = _cache_max_dias[qtdeDiasDoMes]
+    if num_dias_mes not in _cache_max_dias:
+        _cache_max_dias[num_dias_mes] = int(np.ceil(num_dias_mes / 2))
+    maxDiasTrabalhados = _cache_max_dias[num_dias_mes]
 
-    if qtdeDiasDoMes not in _cache_diasDisponiveis:
-        _cache_diasDisponiveis[qtdeDiasDoMes] = np.arange(1, qtdeDiasDoMes + 1)
-    diasDisponiveis = _cache_diasDisponiveis[qtdeDiasDoMes]
+    if num_dias_mes not in _cache_diasDisponiveis:
+        _cache_diasDisponiveis[num_dias_mes] = np.arange(1, num_dias_mes + 1)
+    diasDisponiveis = _cache_diasDisponiveis[num_dias_mes]
 
-    template_zero = np.zeros(qtdeDiasDoMes, dtype=np.int8)
-    ultimos_dias_anteriores = funcionariosDoTurno[:, -1].astype(int)
+    template_zero = np.zeros(num_dias_mes, dtype=np.int8)
+    ultimos_dias_anteriores = funcionarios[:, -1].astype(int)
 
-    qtdePessoasDoTurno = funcionariosDoTurno.shape[0]
-    populacao = np.zeros((qtdePessoasDoTurno, qtdeDiasDoMes, qtdeIndividuos), dtype=np.int8)
+    qtdePessoasDoTurno = funcionarios.shape[0]
+    populacao = np.zeros((qtdePessoasDoTurno, num_dias_mes, qtde_individuos), dtype=np.int8)
 
-    for contIndividuo in range(qtdeIndividuos):
+    for contIndividuo in range(qtde_individuos):
         for contPessoa in range(qtdePessoasDoTurno):
             prev_historico = ultimos_dias_anteriores[contPessoa]
-            dadosFuncionario = funcionariosDoTurno[contPessoa, :]
+            dadosFuncionario = funcionarios[contPessoa, :]
 
             if tipo == 1:
                 funcionario = template_zero.copy()

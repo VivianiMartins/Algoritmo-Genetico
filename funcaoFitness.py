@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-def funcaoFitness(populacao, numDiasMes, tipo, turno, farmaceuticos, auxiliares):
+def funcaoFitness(populacao, numDiasMes, tipo, turno, farmaceuticos, auxiliares, penalidade=False):
     """
     Avaliação da população, atribuindo valores de acordo com que chega na solução ideal
     """
@@ -28,55 +28,62 @@ def funcaoFitness(populacao, numDiasMes, tipo, turno, farmaceuticos, auxiliares)
         x_array = np.sum(farmaceuticosTemp, axis=0) #0 são as colunas
         y_array = np.sum(auxiliaresTemp, axis=0)
 
-        if (np.any(x_array == 0) or np.any(x_array == 3) or np.any(x_array == 2) or
-            np.any(y_array == 0) or np.any(y_array < minAuxiliar) or np.any(y_array > maxAuxiliar)):
-            # somaTemp = -np.inf #voltar quando população inicial estiver calibrada corretamente
-            somaTemp = somaTemp - 25000000.9999 # temporário, apenas para dar continuidade no algoritmo
+        # ---------------------------------------------------------
+        # avaliando farmacêuticos
+        # ---------------------------------------------------------
+        parcelas_farm = ((1 / x_array) ** (-1 + x_array))
+        if penalidade:
+            parcelas_farm = np.where(x_array != 1, -parcelas_farm, parcelas_farm)  #se o valor for diferente de 1, ele será negativado
+
+        # ---------------------------------------------------------
+        # avaliando auxiliares
+        # ---------------------------------------------------------
+        if turno == 1:
+            parcelas_aux = ((1 / y_array) ** (-24 + (y_array / 4.13))) / 12719551155127680000000000
         else:
-            # ---------------------------------------------------------
-            # avaliando farmacêuticos
-            parcelas_farm = 3.825 * ((1 / x_array) ** (-1 + x_array))
-            # ---------------------------------------------------------
+            parcelas_aux = ((1 / y_array) ** (-15 + (y_array / 3.66))) / 1716960112564.01
 
-            # ---------------------------------------------------------
-            # avaliando auxiliares
-            # ---------------------------------------------------------
-            if turno == 1:
-                parcelas_aux = 5 * ((10 / y_array) ** (-24 + (y_array / 1.875)))
-            else:
-                parcelas_aux = 0.000000125 * ((1 / y_array) ** (-15 + (y_array / 3.725)))
 
-            somaTemp += np.sum(parcelas_farm) + np.sum(parcelas_aux)
+        if penalidade:
+            fora_limites_aux = (y_array < minAuxiliar) | (y_array > maxAuxiliar) #se for menor que minAuxiliar ou maior que maxAuxiliar
+            parcelas_aux = np.where(fora_limites_aux, -parcelas_aux, parcelas_aux) #seu resultado se torna negativo
 
-        if somaTemp != -np.inf:
-            # ---------------------------------------------------------
-            # avaliando total de dias trabalhados por funcionário (min e max)
-            # ---------------------------------------------------------
-            maxPermitido = numDiasMes/2
-            limite_dias = math.ceil(maxPermitido)
-            divisor = None
-            if maxPermitido == 14:
-                divisor = 3.64
-            elif maxPermitido == 14.5:
-                divisor = 3.712
-            elif maxPermitido == 15:
-                divisor = 3.725
-            elif maxPermitido == 15.5:
-                divisor = 3.745
+        somaTemp += np.sum(parcelas_farm) + np.sum(parcelas_aux)
 
-            if divisor is not None:
-                z_array = np.sum(individuo, axis=1) #1 são as linhas
-                if np.any(z_array == 0) or np.any(z_array > limite_dias):
-                    #somaTemp = -np.inf #voltar quando população inicial estiver calibrada corretamente
-                    somaTemp = somaTemp - 25000000.99999 #temporário, apenas para dar continuidade no algoritmo
-                else:
-                    parcelas = 0.000000125 * ((1 / z_array) ** (-maxPermitido + (z_array / divisor)))
-                    somaTemp += np.sum(parcelas)
+        # ---------------------------------------------------------
+        # avaliando total de dias trabalhados por funcionário (min e max)
+        # ---------------------------------------------------------
+        maxPermitido = numDiasMes / 2
+        divisor1 = None
+        divisor2 = None
 
-            # ---------------------------------------------------------
-            # Avaliar se trabalha em férias ou licença - fazer depois
-            # ---------------------------------------------------------
-            #já é invalidado com -infinito
+        if maxPermitido == 14:
+            divisor1 = 3.6
+            divisor2 = 387817958882.02
+        elif maxPermitido == 14.5:
+            divisor1 = 3.7
+            divisor2 = 1929237609118.39
+        elif maxPermitido == 15:
+            divisor1 = 3.66
+            divisor2 = 6627088070357.77
+        elif maxPermitido == 15.5:
+            divisor1 = 3.745
+            divisor2 = 33069062888363.5
+
+        if divisor1 and divisor2 is not None:
+            z_array = np.sum(individuo, axis=1)  # 1 são as linhas
+            parcelas = ((1 / z_array) ** (-maxPermitido + (z_array / divisor1))) / divisor2
+
+            if penalidade:
+                limite_dias = math.ceil(maxPermitido)
+                fora_limite_dias = (z_array > limite_dias) #caso esteja fora do limite
+                parcelas = np.where(fora_limite_dias, -parcelas, parcelas) #sua nota fica negativa
+
+            somaTemp += np.sum(parcelas)
+
+        # ---------------------------------------------------------
+        # Avaliar se trabalha em férias ou licença - fazer depois
+        # ---------------------------------------------------------
 
         avaliacaoFitness[cont] = somaTemp
 

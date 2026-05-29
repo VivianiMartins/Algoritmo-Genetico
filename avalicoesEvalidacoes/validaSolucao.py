@@ -23,14 +23,14 @@ def validaSolucao(individuo, num_dias_mes, tipo, funcionarios, turno, farmaceuti
         # ---------------------------------------------------------
         num_func = individuo_valido.shape[0]
         blocked_mask = np.zeros_like(individuo_valido, dtype=bool)
-        diasDisponiveis_por_func = [None] * num_func
+        dias_disponiveis_por_func = [None] * num_func
 
         for f_idx in range(num_func):
             linha = individuo_valido[f_idx, :].copy()
-            dadosFunc = funcionarios[f_idx]
-            linha_corrigida, diasDisp = processarLicensa(linha, dadosFunc, num_dias_mes, tipo)
+            dados_func = funcionarios[f_idx]
+            linha_corrigida, diasDisp = processarLicensa(linha, dados_func, num_dias_mes, tipo)
             individuo_valido[f_idx, :] = linha_corrigida
-            diasDisponiveis_por_func[f_idx] = diasDisp
+            dias_disponiveis_por_func[f_idx] = diasDisp
             blocked_mask[f_idx, :] = (linha_corrigida == 0) & (linha != 0)
 
         individuo_valido[blocked_mask] = 0
@@ -79,7 +79,7 @@ def validaSolucao(individuo, num_dias_mes, tipo, funcionarios, turno, farmaceuti
             elif qtde_farm == 0:
                 candidatos = []
                 for f in range(farmaceuticos): #tenta achar candidatos que não tenham trabalhado no dia anterior ou no dia seguinte, e que não tenham atingido o limite de dias trabalhados no mês
-                    dias_disp = diasDisponiveis_por_func[f] if diasDisponiveis_por_func[f] is not None else list( range(1, num_dias_mes + 1))
+                    dias_disp = dias_disponiveis_por_func[f] if dias_disponiveis_por_func[f] is not None else list( range(1, num_dias_mes + 1))
                     dia_1based = dia + 1
 
                     if dia_1based not in dias_disp: continue
@@ -111,7 +111,7 @@ def validaSolucao(individuo, num_dias_mes, tipo, funcionarios, turno, farmaceuti
                 for a in range(num_auxiliares):
                     idx = a + farmaceuticos
 
-                    dias_disp = diasDisponiveis_por_func[idx] if diasDisponiveis_por_func[idx] is not None else list(
+                    dias_disp = dias_disponiveis_por_func[idx] if dias_disponiveis_por_func[idx] is not None else list(
                         range(1, num_dias_mes + 1))
                     dia_1based = dia + 1
 

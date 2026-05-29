@@ -1,8 +1,8 @@
 import pandas as pd
 import time
 from algoritmoGenetico import algoritmoGenetico
-from geracaoEdicaoDocs.resultadosTeste import resultadosTeste
-from geracaoEdicaoDocs.transformarListaEntrada import transformarListaEntrada
+from edicaoDocumentos.resultadosTeste import resultadosTeste
+from edicaoDocumentos.transformarListaEntrada import transformarListaEntrada
 
 def funcaoPrincipal():
     tempoInicio = time.time()  # Inicia o cronômetro para medir o tempo total de execução
@@ -22,21 +22,21 @@ def funcaoPrincipal():
     dia_reescala_inicio = 0 #dia em que começa a reescala
     dia_reescala_fim = 0  # dia em que termina a reescala
 
-    qtde_individuos = 20
-    geracoes = 50
+    qtde_individuos = 50
+    geracoes = 500
 
     penalidade_fitness = True #False para não aplicar penalidade e True para aplicar penalidade
     elitismo = True  # False para não manter o melhor indivíduo na próxima geração e True manter o melhor na próxima geração
 
-    selecao = 1 #1 para roleta; 2 para elitismo; 3 para torneio; 4 para Maximax e Maximin
+    selecao = 4 #1 para roleta; 2 para elitismo; 3 para torneio; 4 para Maximax e Maximin
     qtd_pais = 2
     tamanho_grupos_torneios = 5
 
-    cruzamento = 1 #1 para cruzamento com bloco
+    cruzamento = 1 #1 por blocos; 2 xadrez(cortes verticais e horizontais)
     qtd_blocos = 10
 
-    mutacao = 1  # 1 mutação por sorteio da linha
-    taxa_mutacao = 0.1 #probabilidade do indivíduo ser mutato
+    mutacao = 2  # 1 bit flip em bloco sorteado a partir de uma linha; 2 bit flip em apenas um gene
+    probabilidade_mutacao = 0.2 #probabilidade do indivíduo ser mutato
 
 
     if tipo not in [1, 2]: raise ValueError("Deve ser 1 para escala ou 2 para reescala")
@@ -56,7 +56,7 @@ def funcaoPrincipal():
                                                     tipo, num_dias_mes, dia_reescala_inicio, dia_reescala_fim,
                                                     qtde_individuos, geracoes,
                                                     penalidade_fitness, elitismo, selecao, qtd_pais, tamanho_grupos_torneios,
-                                                    cruzamento, qtd_blocos, mutacao, taxa_mutacao)
+                                                    cruzamento, qtd_blocos, mutacao, probabilidade_mutacao)
 
     tempo_total = time.time() - tempoInicio
     print(f'\nTempo Total: {tempo_total:.2f} segundos ({tempo_total / 60:.2f} minutos)')

@@ -1,7 +1,10 @@
 import numpy as np
-from geracaoEdicaoDocs.salvarExcel import salvarExcel
+
+from mutacao.bitFlipBloco import bitFlipBloco
+from cruzamento.xadrez import xadrez
 from geraPopulacaoInicial import geraPopulacaoInicial
 from avalicoesEvalidacoes.funcaoFitness import funcaoFitness
+from mutacao.bitFlipGene import bitFlipGene
 from selecao.maximaxMaximin import maximaxMaximin
 from selecao.roleta import roleta
 from selecao.elitista import elitista
@@ -9,7 +12,7 @@ from selecao.torneio import torneio
 from cruzamento.blocos import blocos
 
 def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tipo, num_dias_mes, dia_reescala_inicio, dia_reescala_fim,
-                      qtde_individuos, geracoes, penalidade_fitness, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, taxa_mutacao):
+                      qtde_individuos, geracoes, penalidade_fitness, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao):
     """
     Executa o Algoritmo Genético completo ao longo de várias gerações.
     """
@@ -30,10 +33,8 @@ def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tip
     # ---------------------------------------------------------
     # População inicial
     # ---------------------------------------------------------
-    populacao_atual = geraPopulacaoInicial(funcionarios, qtde_individuos, num_dias_mes, tipo, dia_reescala_inicio, dia_reescala_fim)
+    populacao_atual = geraPopulacaoInicial(funcionarios, qtde_individuos, num_dias_mes, tipo, dia_reescala_inicio, dia_reescala_fim,  turno, farmaceuticos, auxiliares)
     #salvarExcel(populacao=populacao_atual, lista_nomes_cargos=nomes, farmaceuticos=farmaceuticos, auxiliares=auxiliares, caminho_arquivo='0_população_inicial.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
-
-    if elitismo: qtde_individuos = qtde_individuos - 1
 
     for geracao in range(geracoes):
         print(f"\n>> Processando Geração {geracao + 1}/{geracoes} <<")
@@ -66,7 +67,7 @@ def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tip
         if selecao == 1: selecionados = roleta(resultado_fitness, qtd_pais)
         elif selecao == 2: selecionados = elitista(resultado_fitness, qtd_pais)
         elif selecao == 3: selecionados = torneio(resultado_fitness, qtd_pais, tamanho_grupos_torneios)
-        elif selecao == 4: selecionados = maximaxMaximin(resultado_fitness, qtd_pais)
+        elif selecao == 4: selecionados = maximaxMaximin(resultado_fitness, qtd_pais, qtde_individuos)
 
         historico_selecionados_indices.append(selecionados)
         historico_selecionados_fitness.append(resultado_fitness[selecionados])
@@ -75,15 +76,16 @@ def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tip
             # ---------------------------------------------------------
             # Cruzamento
             # ---------------------------------------------------------
-            if cruzamento == 1: populacao_atual = blocos(selecionados, populacao_atual, funcionarios, qtde_individuos, qtd_blocos, turno, farmaceuticos, auxiliares, num_dias_mes)
-
+            if cruzamento == 1: populacao_atual = blocos(selecionados, populacao_atual, funcionarios, qtde_individuos, qtd_blocos, turno, farmaceuticos, auxiliares, num_dias_mes, tipo)
+            elif cruzamento == 2: populacao_atual = xadrez(selecionados, populacao_atual, funcionarios, qtde_individuos, turno, farmaceuticos, auxiliares, num_dias_mes, tipo)
 
             # ---------------------------------------------------------
             # Mutação - refazer
             # ---------------------------------------------------------
-            #populacao_atual = mutacao(populacao_atual, funcionarios, turno, farmaceuticos, auxiliares, num_dias_mes)
+            if mutacao == 1: populacao_atual = bitFlipBloco(probabilidade_mutacao, populacao_atual, funcionarios, turno, farmaceuticos, auxiliares, num_dias_mes, tipo)
+            elif mutacao == 2: populacao_atual = bitFlipGene(probabilidade_mutacao, populacao_atual, funcionarios, turno, farmaceuticos, auxiliares, num_dias_mes, tipo)
 
-            if elitismo: populacao_atual[:, :, -1] = melhor_individuo_global
+        if elitismo: populacao_atual[:, :, -1] = melhor_individuo_global
 
     return (populacao_atual, historico_individuos, historico_fitness, melhor_individuo_global, historico_selecionados_fitness, historico_selecionados_indices, historico_melhor_idx, melhor_geracao_global,
             melhor_id_global, historico_fitness_todos)

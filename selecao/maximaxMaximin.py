@@ -1,38 +1,30 @@
 import numpy as np
 
-def maximaxMaximin(resultado_fitness, qtd_pais):
+
+def maximaxMaximin(resultado_fitness, qtd_pais, qtde_individuos):
     """
     Seleção de pais utilizando o método MX Parent Selection - Maximax e Maximin.
-
     """
     selecionados = []
-    populacao_total = np.arange(len(resultado_fitness)).tolist()
+    populacao_total = np.arange(qtde_individuos).tolist()
 
     while len(selecionados) < qtd_pais:
-        populacao_total.sort(key=lambda idx: resultado_fitness[idx])
-        tamanho_subpopulacao = max(2, len(populacao_total) // 2)
 
-        sub_populacao = populacao_total[:tamanho_subpopulacao]
-        sub_populacao.sort(key=lambda idx: resultado_fitness[idx])
+        tamanho_subpopulacao = max(2, qtde_individuos // 2)
+        sub_populacao = np.random.choice(populacao_total, size=tamanho_subpopulacao, replace=False).tolist()
+
+        sub_populacao.sort(key=lambda idx: resultado_fitness[idx], reverse=True)
 
         metade = len(sub_populacao) // 2
-        grupo_minimo = sub_populacao[:metade]
-        grupo_maximo = sub_populacao[metade:]
+        grupo_maximo = sub_populacao[:metade]  # 1ª metade (melhores da sub-população)
+        grupo_minimo = sub_populacao[metade:]  # 2ª metade (piores da sub-população)
 
-        maximax = max(grupo_maximo, key=lambda idx: resultado_fitness[idx])
-        maximin = max(grupo_minimo, key=lambda idx: resultado_fitness[idx])
+        maximax = grupo_maximo[0]
+        maximin = grupo_minimo[0]
 
-        if len(selecionados) < qtd_pais:
-            selecionados.append(maximax)
-            if maximax in populacao_total:
-                populacao_total.remove(maximax)
+        selecionados.append(maximax)
 
         if len(selecionados) < qtd_pais:
             selecionados.append(maximin)
-            if maximin in populacao_total:
-                populacao_total.remove(maximin)
-
-        if len(populacao_total) < 2:
-            populacao_total = np.arange(len(resultado_fitness)).tolist()
 
     return selecionados

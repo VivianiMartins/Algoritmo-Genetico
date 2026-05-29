@@ -1,5 +1,5 @@
 import numpy as np
-from validaSolucao import validaSolucao
+from avalicoesEvalidacoes.validaSolucao import validaSolucao
 
 def mutacao(populacao, funcionarios, turno, farmaceuticos, auxiliares, num_dias_mes):
     """

@@ -2,8 +2,7 @@ from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-
-def _converter_cargo_numerico_para_texto(cargo_numerico):
+def converterCargoNumericoParaTexto(cargo_numerico):
     """
     Converte código numérico de cargo para texto.
 
@@ -20,8 +19,8 @@ def _converter_cargo_numerico_para_texto(cargo_numerico):
     return mapa_cargos.get(cargo_numerico, "Desconhecido")
 
 
-def salvar_excel( populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminho_arquivo='populacao_escalas.xlsx', num_dias_mes=30,
-                  salvar_completo=True, indice_individuo=None, somatorio=False):
+def salvarExcel(populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminho_arquivo='populacao_escalas.xlsx', num_dias_mes=30,
+                salvar_completo=True, indice_individuo=None, somatorio=False):
     """
     Salva em arquivo Excel com opção de salvar população completa ou apenas uma escala.
       Arquivo Excel com abas conforme a flag:
@@ -49,7 +48,7 @@ def salvar_excel( populacao, lista_nomes_cargos, farmaceuticos, auxiliares, cami
             ultimo_dia_mes_ant = 0
 
         nomes_funcionarios.append(nome)
-        cargos_texto.append(_converter_cargo_numerico_para_texto(cargo_num))
+        cargos_texto.append(converterCargoNumericoParaTexto(cargo_num))
         ultimo_dia_mes_anterior.append(ultimo_dia_mes_ant)
 
     # Valida quantidade de funcionários
@@ -87,7 +86,7 @@ def salvar_excel( populacao, lista_nomes_cargos, farmaceuticos, auxiliares, cami
     )
 
     # ===== FUNÇÃO AUXILIAR: Cria uma aba com a escala =====
-    def criar_aba_escala(sheet, populacao_individuo, nomes, cargos, ultimo_dia_mes_anterior, farmaceuticos, auxiliares):
+    def criarAbaEscala(sheet, populacao_individuo, nomes, cargos, ultimo_dia_mes_anterior, farmaceuticos, auxiliares):
         """
         Cria uma aba formatada com a escala de um indivíduo.
 
@@ -240,10 +239,10 @@ def salvar_excel( populacao, lista_nomes_cargos, farmaceuticos, auxiliares, cami
     if salvar_completo:
         for ind in range(qtdeIndividuos):
             sheet = workbook.create_sheet(title=f'Indivíduo_{ind + 1}')
-            criar_aba_escala(sheet, populacao[:, :, ind], nomes_funcionarios, cargos_texto, ultimo_dia_mes_anterior, farmaceuticos, auxiliares)
+            criarAbaEscala(sheet, populacao[:, :, ind], nomes_funcionarios, cargos_texto, ultimo_dia_mes_anterior, farmaceuticos, auxiliares)
         workbook.save(caminho_arquivo)
 
     else: # Salva apenas um indivíduo
         sheet = workbook.create_sheet(title='Escala')
-        criar_aba_escala(sheet, populacao[:, :, indice_individuo], nomes_funcionarios, cargos_texto, ultimo_dia_mes_anterior, farmaceuticos, auxiliares)
+        criarAbaEscala(sheet, populacao[:, :, indice_individuo], nomes_funcionarios, cargos_texto, ultimo_dia_mes_anterior, farmaceuticos, auxiliares)
         workbook.save(caminho_arquivo)

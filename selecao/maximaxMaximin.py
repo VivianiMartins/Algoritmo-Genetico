@@ -1,6 +1,6 @@
 import numpy as np
 
-def maximax_maximin(resultado_fitness, qtd_pais):
+def maximaxMaximin(resultado_fitness, qtd_pais):
     """
     Seleção de pais utilizando o método MX Parent Selection - Maximax e Maximin.
 

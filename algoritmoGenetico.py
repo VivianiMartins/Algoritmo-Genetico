@@ -1,20 +1,20 @@
 import numpy as np
-from salvarExcel import salvar_excel
+from geracaoEdicaoDocs.salvarExcel import salvarExcel
 from geraPopulacaoInicial import geraPopulacaoInicial
-from funcaoFitness import funcaoFitness
-from selecao.maximax_maximin import maximax_maximin
+from avalicoesEvalidacoes.funcaoFitness import funcaoFitness
+from selecao.maximaxMaximin import maximaxMaximin
 from selecao.roleta import roleta
 from selecao.elitista import elitista
 from selecao.torneio import torneio
 from cruzamento.blocos import blocos
 
 def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tipo, num_dias_mes, dia_reescala_inicio, dia_reescala_fim,
-                qtde_individuos, geracoes, penalidade_fitness, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, taxa_mutacao):
+                      qtde_individuos, geracoes, penalidade_fitness, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, taxa_mutacao):
     """
     Executa o Algoritmo Genético completo ao longo de várias gerações.
     """
     # Para Testes: Seed é um valor inicial que "inicializa" o gerador de números aleatórios (PRNG - Pseudo-Random Number Generator). Mesmo seed = mesmos números aleatórios: Toda vez que roda o código com seed(42), obtém os mesmos números "aleatórios" na mesma ordem.
-    #np.random.seed(42)
+    np.random.seed(42)
 
     historico_individuos = []
     historico_fitness = []
@@ -31,7 +31,7 @@ def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tip
     # População inicial
     # ---------------------------------------------------------
     populacao_atual = geraPopulacaoInicial(funcionarios, qtde_individuos, num_dias_mes, tipo, dia_reescala_inicio, dia_reescala_fim)
-    salvar_excel( populacao=populacao_atual, lista_nomes_cargos=nomes, farmaceuticos=farmaceuticos, auxiliares=auxiliares, caminho_arquivo='0_população_inicial.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
+    #salvarExcel(populacao=populacao_atual, lista_nomes_cargos=nomes, farmaceuticos=farmaceuticos, auxiliares=auxiliares, caminho_arquivo='0_população_inicial.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
 
     if elitismo: qtde_individuos = qtde_individuos - 1
 
@@ -41,7 +41,7 @@ def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tip
         # ---------------------------------------------------------
         # Fitness
         # ---------------------------------------------------------
-        resultado_fitness = funcaoFitness(populacao_atual, num_dias_mes, tipo, turno, farmaceuticos, auxiliares, penalidade=penalidade_fitness)
+        resultado_fitness = funcaoFitness(populacao_atual, num_dias_mes, tipo, turno, funcionarios, farmaceuticos, auxiliares, penalidade=penalidade_fitness)
 
         historico_fitness_todos.append(resultado_fitness.copy())
 
@@ -66,7 +66,7 @@ def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tip
         if selecao == 1: selecionados = roleta(resultado_fitness, qtd_pais)
         elif selecao == 2: selecionados = elitista(resultado_fitness, qtd_pais)
         elif selecao == 3: selecionados = torneio(resultado_fitness, qtd_pais, tamanho_grupos_torneios)
-        elif selecao == 4: selecionados = maximax_maximin(resultado_fitness, qtd_pais)
+        elif selecao == 4: selecionados = maximaxMaximin(resultado_fitness, qtd_pais)
 
         historico_selecionados_indices.append(selecionados)
         historico_selecionados_fitness.append(resultado_fitness[selecionados])

@@ -1,6 +1,6 @@
 import numpy as np
 
-def validar_valor_inteiro(valor, nome, indice=None):
+def validarValorInteiro(valor, nome, indice=None):
     """
     Valida e converte um valor para inteiro, com tratamento robusto de tipos.
     Valor convertido ou 0 em caso de erro
@@ -68,11 +68,11 @@ def transformarListaEntrada(listaFuncionarios):
 
         turno = listaFuncionarios[cont][2].strip().lower()
 
-        inicio = validar_valor_inteiro(listaFuncionarios[cont][3], "inicio", cont)
-        fim = validar_valor_inteiro(listaFuncionarios[cont][4], "fim", cont)
+        inicio = validarValorInteiro(listaFuncionarios[cont][3], "inicio", cont)
+        fim = validarValorInteiro(listaFuncionarios[cont][4], "fim", cont)
 
         dias_raw = listaFuncionarios[cont][5:5 + numDiasMes]
-        diasDoMes = [validar_valor_inteiro(d, "dia", d_idx + 1) for d_idx, d in enumerate(dias_raw)]
+        diasDoMes = [validarValorInteiro(d, "dia", d_idx + 1) for d_idx, d in enumerate(dias_raw)]
 
         if turno == "diurno":
             if cargoNumerico == 1:

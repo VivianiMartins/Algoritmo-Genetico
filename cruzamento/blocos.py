@@ -1,5 +1,5 @@
 import numpy as np
-from validaSolucao import validaSolucao
+from avalicoesEvalidacoes.validaSolucao import validaSolucao
 
 def blocos(selecionados, populacao, funcionarios, qtde_individuos, qtd_blocos, turno, farmaceuticos, auxiliares, num_dias_mes):
     """

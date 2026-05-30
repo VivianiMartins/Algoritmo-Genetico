@@ -32,7 +32,7 @@ def funcaoPrincipal():
     qtd_pais = 2
     tamanho_grupos_torneios = 5
 
-    cruzamento = 1 #1 por blocos; 2 xadrez(cortes verticais e horizontais)
+    cruzamento = 3 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 porcentagem de herança e ordem sorteadas (cortes verticais)
     qtd_blocos = 10
 
     mutacao = 2  # 1 bit flip em bloco sorteado a partir de uma linha; 2 bit flip em apenas um gene

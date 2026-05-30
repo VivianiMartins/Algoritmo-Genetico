@@ -1,15 +1,17 @@
 import numpy as np
 
-from mutacao.bitFlipBloco import bitFlipBloco
-from cruzamento.xadrez import xadrez
+from edicaoDocumentos.salvarExcel import salvarExcel
 from geraPopulacaoInicial import geraPopulacaoInicial
 from avalicoesEvalidacoes.funcaoFitness import funcaoFitness
-from mutacao.bitFlipGene import bitFlipGene
-from selecao.maximaxMaximin import maximaxMaximin
 from selecao.roleta import roleta
 from selecao.elitista import elitista
 from selecao.torneio import torneio
+from selecao.maximaxMaximin import maximaxMaximin
 from cruzamento.blocos import blocos
+from cruzamento.xadrez import xadrez
+from cruzamento.porcentagenSorteio import percentagensSorteio
+from mutacao.bitFlipBloco import bitFlipBloco
+from mutacao.bitFlipGene import bitFlipGene
 
 def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tipo, num_dias_mes, dia_reescala_inicio, dia_reescala_fim,
                       qtde_individuos, geracoes, penalidade_fitness, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao):
@@ -34,7 +36,7 @@ def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tip
     # População inicial
     # ---------------------------------------------------------
     populacao_atual = geraPopulacaoInicial(funcionarios, qtde_individuos, num_dias_mes, tipo, dia_reescala_inicio, dia_reescala_fim,  turno, farmaceuticos, auxiliares)
-    #salvarExcel(populacao=populacao_atual, lista_nomes_cargos=nomes, farmaceuticos=farmaceuticos, auxiliares=auxiliares, caminho_arquivo='0_população_inicial.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
+    salvarExcel(populacao=populacao_atual, lista_nomes_cargos=nomes, farmaceuticos=farmaceuticos, auxiliares=auxiliares, caminho_arquivo='0_população_inicial.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
 
     for geracao in range(geracoes):
         print(f"\n>> Processando Geração {geracao + 1}/{geracoes} <<")
@@ -78,9 +80,10 @@ def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tip
             # ---------------------------------------------------------
             if cruzamento == 1: populacao_atual = blocos(selecionados, populacao_atual, funcionarios, qtde_individuos, qtd_blocos, turno, farmaceuticos, auxiliares, num_dias_mes, tipo)
             elif cruzamento == 2: populacao_atual = xadrez(selecionados, populacao_atual, funcionarios, qtde_individuos, turno, farmaceuticos, auxiliares, num_dias_mes, tipo)
+            elif cruzamento == 3: populacao_atual = percentagensSorteio(selecionados, populacao_atual, funcionarios, qtde_individuos, turno, farmaceuticos, auxiliares, num_dias_mes, tipo)
 
             # ---------------------------------------------------------
-            # Mutação - refazer
+            # Mutação
             # ---------------------------------------------------------
             if mutacao == 1: populacao_atual = bitFlipBloco(probabilidade_mutacao, populacao_atual, funcionarios, turno, farmaceuticos, auxiliares, num_dias_mes, tipo)
             elif mutacao == 2: populacao_atual = bitFlipGene(probabilidade_mutacao, populacao_atual, funcionarios, turno, farmaceuticos, auxiliares, num_dias_mes, tipo)

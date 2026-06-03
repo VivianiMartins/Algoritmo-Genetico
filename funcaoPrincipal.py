@@ -22,21 +22,21 @@ def funcaoPrincipal():
     dia_reescala_inicio = 0 #dia em que começa a reescala
     dia_reescala_fim = 0  # dia em que termina a reescala
 
-    qtde_individuos = 50
-    geracoes = 500
+    qtde_individuos = 30
+    geracoes = 1500
 
     penalidade_fitness = True #False para não aplicar penalidade e True para aplicar penalidade
     elitismo = True  # False para não manter o melhor indivíduo na próxima geração e True manter o melhor na próxima geração
 
-    selecao = 4 #1 para roleta; 2 para elitismo; 3 para torneio; 4 para Maximax e Maximin
+    selecao = 1 #1 para roleta; 2 para elitismo; 3 para torneio; 4 para Maximax e Maximin
     qtd_pais = 2
     tamanho_grupos_torneios = 5
 
-    cruzamento = 3 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 porcentagem de herança e ordem sorteadas (cortes verticais)
-    qtd_blocos = 10
+    cruzamento = 1 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 porcentagem de herança e ordem sorteadas (cortes verticais)
+    qtd_blocos = 20
 
     mutacao = 2  # 1 bit flip em bloco sorteado a partir de uma linha; 2 bit flip em apenas um gene
-    probabilidade_mutacao = 0.2 #probabilidade do indivíduo ser mutato
+    probabilidade_mutacao = 0.2 #probabilidade do indivíduo ser mutado
 
 
     if tipo not in [1, 2]: raise ValueError("Deve ser 1 para escala ou 2 para reescala")

@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def maximaxMaximin(resultado_fitness, qtd_pais, qtde_individuos):
     """
     Seleção de pais utilizando o método MX Parent Selection - Maximax e Maximin.
@@ -13,7 +12,9 @@ def maximaxMaximin(resultado_fitness, qtd_pais, qtde_individuos):
         tamanho_subpopulacao = max(2, qtde_individuos // 2)
         sub_populacao = np.random.choice(populacao_total, size=tamanho_subpopulacao, replace=False).tolist()
 
-        sub_populacao.sort(key=lambda idx: resultado_fitness[idx], reverse=True)
+        fitness_sub = np.asarray(resultado_fitness)[sub_populacao]
+        order = np.argsort(fitness_sub)[::-1]
+        sub_populacao = [sub_populacao[i] for i in order]
 
         metade = len(sub_populacao) // 2
         grupo_maximo = sub_populacao[:metade]  # 1ª metade (melhores da sub-população)

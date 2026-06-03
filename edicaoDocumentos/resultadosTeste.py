@@ -20,7 +20,7 @@ def resultadosTeste(populacaoFinal, historico_individuos, historico_fitness, mel
 
     # Salvar Histórico de Indivíduos - os melhores de cada geração
     historico_3d = np.stack(historico_individuos, axis=2)
-    salvarExcel(populacao=historico_3d, lista_nomes_cargos=nomes_turno, farmaceuticos=farm_turno, auxiliares=aux_turno, caminho_arquivo='2_historico_melhores_geracao.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
+    salvarExcel(populacao=historico_3d, lista_nomes_cargos=nomes_turno, farmaceuticos=farm_turno, auxiliares=aux_turno, caminho_arquivo='2_historico_melhores_geracao_individuos.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
 
     # Melhor Indivíduo
     melhor_global_3d = np.expand_dims(melhor_individuo_global, axis=2)

@@ -14,7 +14,7 @@ from mutacao.bitFlipBloco import bitFlipBloco
 from mutacao.bitFlipGene import bitFlipGene
 
 def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tipo, num_dias_mes, dia_reescala_inicio, dia_reescala_fim,
-                      qtde_individuos, geracoes, penalidade_fitness, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao):
+                      qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao):
     """
     Executa o Algoritmo Genético completo ao longo de várias gerações.
     """
@@ -44,7 +44,7 @@ def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tip
         # ---------------------------------------------------------
         # Fitness
         # ---------------------------------------------------------
-        resultado_fitness = funcaoFitness(populacao_atual, num_dias_mes, tipo, turno, funcionarios, farmaceuticos, auxiliares, penalidade=penalidade_fitness)
+        resultado_fitness = funcaoFitness(populacao_atual, num_dias_mes, tipo, turno, funcionarios, farmaceuticos, auxiliares)
 
         historico_fitness_todos.append(resultado_fitness.copy())
 

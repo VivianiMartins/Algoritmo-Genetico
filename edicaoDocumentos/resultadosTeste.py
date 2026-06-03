@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from .salvarExcel import salvarExcel
 
-def resultadosTeste(populacaoFinal, historico_individuos, historico_fitness, melhor_individuo_global,
-                     hist_sel_fit, hist_sel_idx, hist_melhor_idx, geracao_campea, id_campeao,
-                     historico_fitness_todos, nomes_turno, farm_turno, aux_turno, num_dias_mes, qtde_individuos):
+def resultadosTeste(populacao_final, historico_individuos, historico_fitness, melhor_individuo_global,
+                    hist_sel_fit, hist_sel_idx, hist_melhor_idx, geracao_campea, id_campeao,
+                    historico_fitness_todos, nomes_turno, farm_turno, aux_turno, num_dias_mes, qtde_individuos):
     """
     Gera e salva todos os resultados dos testes:
     - Planilhas Excel com populações e históricos
@@ -16,7 +16,7 @@ def resultadosTeste(populacaoFinal, historico_individuos, historico_fitness, mel
     # Visualização de resultados
     # =========================================================================
     # População Final
-    salvarExcel(populacao=populacaoFinal, lista_nomes_cargos=nomes_turno, farmaceuticos=farm_turno, auxiliares=aux_turno, caminho_arquivo='1_populacao_final.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
+    salvarExcel(populacao=populacao_final, lista_nomes_cargos=nomes_turno, farmaceuticos=farm_turno, auxiliares=aux_turno, caminho_arquivo='1_populacao_final.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
 
     # Salvar Histórico de Indivíduos - os melhores de cada geração
     historico_3d = np.stack(historico_individuos, axis=2)

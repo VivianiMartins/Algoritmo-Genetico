@@ -25,7 +25,9 @@ def torneio(resultado_fitness, qtd_pais, tamanho_grupos_torneios):
 
                     for i in range(0, 2 * confrontos_necessarios, 2):
                         dupla = selecionados[i:i + 2]
-                        dupla.sort(key=lambda idx: resultado_fitness[idx], reverse=True)
+                        fitness_sub = np.asarray(resultado_fitness)[dupla]
+                        order = np.argsort(fitness_sub)[::-1]
+                        dupla = [dupla[i] for i in order]
                         proxima_fase.append(dupla[0])
 
                     proxima_fase.extend(selecionados[2 * confrontos_necessarios:])
@@ -34,19 +36,23 @@ def torneio(resultado_fitness, qtd_pais, tamanho_grupos_torneios):
                     proxima_fase = []
                     for i in range(0, len(selecionados), 2):
                         dupla = selecionados[i:i + 2]
-                        dupla.sort(key=lambda idx: resultado_fitness[idx], reverse=True)
+                        fitness_sub = np.asarray(resultado_fitness)[dupla]
+                        order = np.argsort(fitness_sub)[::-1]
+                        dupla = [dupla[i] for i in order]
                         proxima_fase.append(dupla[0])
                     selecionados = proxima_fase
             break
 
         # -----------------------------------------------------------------
-        # Torneio Padrão (Fases Iniciais com grupos grandes)
+        # Torneio Padrão - grupos
         # -----------------------------------------------------------------
         proxima_fase = []
 
         for i in range(0, len(selecionados), tamanho_grupos_torneios):
             grupo = selecionados[i:i + tamanho_grupos_torneios]
-            grupo.sort(key=lambda idx: resultado_fitness[idx], reverse=True)
+            fitness_sub = np.asarray(resultado_fitness)[grupo]
+            order = np.argsort(fitness_sub)[::-1]
+            grupo = [grupo[i] for i in order]
             proxima_fase.append(grupo[0])
 
         selecionados = proxima_fase

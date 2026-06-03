@@ -2,7 +2,7 @@ import math
 import numpy as np
 from avalicoesEvalidacoes._to_int_safe import _to_int_safe
 
-def funcaoFitness(populacao, num_dias_mes, tipo, turno, funcionarios, farmaceuticos, auxiliares, penalidade=False):
+def funcaoFitness(populacao, num_dias_mes, tipo, turno, funcionarios, farmaceuticos, auxiliares):
     """
     Avaliação da população, atribuindo valores de acordo com que chega na solução ideal
     """
@@ -49,7 +49,7 @@ def funcaoFitness(populacao, num_dias_mes, tipo, turno, funcionarios, farmaceuti
                     if np.any(linha[inicio - 1:fim] == 1): violou = True
 
             if violou:
-                if penalidade: pontuacao_ferias -= 1
+                if turno == 1: pontuacao_ferias -= 1
                 else: pontuacao_ferias += 0 #deixei apenas para eu não me perder
             else:
                 pontuacao_ferias += 1
@@ -63,7 +63,7 @@ def funcaoFitness(populacao, num_dias_mes, tipo, turno, funcionarios, farmaceuti
         parcelas_farm = ((1 / x_safe) ** (-1 + x_safe))
         parcelas_farm = np.where(x_array == 0, 0.0, parcelas_farm)
 
-        if penalidade: parcelas_farm = np.where(x_array != 1, -parcelas_farm, parcelas_farm)  #se o valor for diferente de 1, ele será negativado
+        if turno == 1: parcelas_farm = np.where(x_array != 1, -parcelas_farm, parcelas_farm)  #se o valor for diferente de 1, ele será negativado
 
         # ---------------------------------------------------------
         # avaliando auxiliares
@@ -74,7 +74,7 @@ def funcaoFitness(populacao, num_dias_mes, tipo, turno, funcionarios, farmaceuti
             parcelas_aux = ((1 / y_array) ** (-15 + (y_array / 3.66))) / 1716960112564.01
 
 
-        if penalidade:
+        if turno == 1:
             fora_limites_aux = (y_array < min_auxiliar) | (y_array > max_auxiliar) #se for menor que min_auxiliar ou maior que max_auxiliar
             parcelas_aux = np.where(fora_limites_aux, -parcelas_aux, parcelas_aux) #seu resultado se torna negativo
 
@@ -106,7 +106,7 @@ def funcaoFitness(populacao, num_dias_mes, tipo, turno, funcionarios, farmaceuti
             parcelas = ((1 / z_safe) ** (-max_permitido + (z_safe / divisor1))) / divisor2
             parcelas = np.where(z_array == 0, 0.0, parcelas)
 
-            if penalidade:
+            if turno == 1:
                 limite_dias = math.ceil(max_permitido)
                 fora_limite_dias = (z_array > limite_dias) #caso esteja fora do limite
                 parcelas = np.where(fora_limite_dias, -parcelas, parcelas) #sua nota fica negativa

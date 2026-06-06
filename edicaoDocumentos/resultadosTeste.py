@@ -24,7 +24,7 @@ def resultadosTeste(populacao_final, historico_individuos, historico_fitness, me
 
     # Melhor Indivíduo
     melhor_global_3d = np.expand_dims(melhor_individuo_global, axis=2)
-    salvarExcel(populacao=melhor_global_3d, lista_nomes_cargos=nomes_turno, farmaceuticos=farm_turno, auxiliares=aux_turno, caminho_arquivo='3_melhor_escala_global.xlsx', num_dias_mes=num_dias_mes, salvar_completo=False, somatorio=True)
+    salvarExcel(populacao=melhor_global_3d, lista_nomes_cargos=nomes_turno, farmaceuticos=farm_turno, auxiliares=aux_turno, caminho_arquivo='3_melhor_escala_global.xlsx', num_dias_mes=num_dias_mes, salvar_completo=False, somatorio=False)
 
     # Gráfico de Histórico de Fitness
     print("Gerando gráfico de evolução do fitness...")
@@ -45,7 +45,7 @@ def resultadosTeste(populacao_final, historico_individuos, historico_fitness, me
 
         if i % salto_textos == 0 or i == total_gens - 1:
             plt.annotate(f'id:{id_melhor}', (geracao_x, nota_melhor), textcoords="offset points", xytext=(0, 10),
-                         ha='center', va='bottom', fontsize=9, color='darkblue', weight='bold')
+                         ha='center', va='bottom', fontsize=10, color='darkblue', weight='bold')
 
     for i, geracao_x in enumerate(geracoes_eixo_x):
         notas_selecionados = hist_sel_fit[i]
@@ -55,15 +55,14 @@ def resultadosTeste(populacao_final, historico_individuos, historico_fitness, me
             nota = notas_selecionados[j]
             indice = indices_selecionados[j]
 
-            plt.scatter(geracao_x, nota, color='red', zorder=5, alpha=0.6, s=30)
+            plt.scatter(geracao_x, nota, color='red', zorder=5, alpha=0.6, s=5)
 
-            if i % salto_textos == 0 or i == total_gens - 1:
-                plt.annotate(f'id:{indice}', (geracao_x, nota), textcoords="offset points", xytext=(6, 0),
-                             ha='left', va='center', fontsize=8, color='darkred')
+            #if i % salto_textos == 0 or i == total_gens - 1:
+             #   plt.annotate(f'id:{indice}', (geracao_x, nota), textcoords="offset points", xytext=(6, 0), ha='left', va='center', fontsize=8, color='darkred')
 
     # Destaque para o melhor Global
     nota_campea = historico_fitness[geracao_campea - 1]
-    plt.scatter(geracao_campea, nota_campea, color='gold', edgecolor='black', marker='*', s=350, zorder=10,
+    plt.scatter(geracao_campea, nota_campea, color='gold', edgecolor='black', marker='*', s=200, zorder=10,
                 label=f'Melhor Global (Gen {geracao_campea})')
 
     plt.scatter([], [], color='red', label='Indivíduos Selecionados')

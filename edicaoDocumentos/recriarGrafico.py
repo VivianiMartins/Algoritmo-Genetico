@@ -46,8 +46,7 @@ def recriarGrafico(caminho_arquivo, salvar=False):
              linewidth=2, label='Melhor da Geração', zorder=4)
 
     # 4. Destaque para o Melhor Global (Estrela Dourada)
-    plt.scatter(geracao_campea, nota_campea, color='gold', edgecolor='black', marker='*', s=350, zorder=10,
-                label=f'Melhor Global (Gen {geracao_campea}: {nota_campea:.2f})')
+    #plt.scatter(geracao_campea, nota_campea, color='gold', edgecolor='black', marker='*', s=350, zorder=10, label=f'Melhor Global (Gen {geracao_campea}: {nota_campea:.2f})')
 
     # Configurações visuais do gráfico
     plt.title('Distribuição e Evolução do Fitness Recriada', fontsize=14, fontweight='bold')

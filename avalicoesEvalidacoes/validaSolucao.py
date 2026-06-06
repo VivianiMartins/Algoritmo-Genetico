@@ -1,5 +1,5 @@
 import numpy as np
-from avalicoesEvalidacoes.processarLicensa import processarLicensa
+from avalicoesEvalidacoes.processarLicenca import processarLicenca
 
 _cache_max_dias = {}
 
@@ -28,9 +28,9 @@ def validaSolucao(individuo, num_dias_mes, tipo, funcionarios, turno, farmaceuti
         for f_idx in range(num_func):
             linha = individuo_valido[f_idx, :].copy()
             dados_func = funcionarios[f_idx]
-            linha_corrigida, diasDisp = processarLicensa(linha, dados_func, num_dias_mes, tipo)
+            linha_corrigida, dias_disp = processarLicenca(linha, dados_func, num_dias_mes, tipo)
             individuo_valido[f_idx, :] = linha_corrigida
-            dias_disponiveis_por_func[f_idx] = diasDisp
+            dias_disponiveis_por_func[f_idx] = dias_disp
             blocked_mask[f_idx, :] = (linha_corrigida == 0) & (linha != 0)
 
         individuo_valido[blocked_mask] = 0

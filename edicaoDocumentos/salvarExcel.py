@@ -34,21 +34,29 @@ def salvarExcel(populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminh
     nomes_funcionarios = []
     cargos_texto = []
     ultimo_dia_mes_anterior = []
+    inicios = []
+    fins = []
 
     for item in lista_nomes_cargos:
         if isinstance(item, tuple):
-            nome, cargo_num, ultimo_dia_mes_ant = item
+            nome, cargo_num, ultimo_dia_mes_ant, inicio, fim = item
         elif isinstance(item, dict):
             nome = item.get('nome', 'Desconhecido')
             cargo_num = item.get('cargo', 2)
+            inicio = item.get('inicio', 0)
+            fim = item.get('fim', 0)
             ultimo_dia_mes_ant = item.get('ultimo_dia_mes_ant', 0)
         else:
             nome = str(item)
             cargo_num = 2
+            inicio = 0
+            fim = 0
             ultimo_dia_mes_ant = 0
 
         nomes_funcionarios.append(nome)
         cargos_texto.append(converterCargoNumericoParaTexto(cargo_num))
+        inicios.append(inicio)
+        fins.append(fim)
         ultimo_dia_mes_anterior.append(ultimo_dia_mes_ant)
 
     # Valida quantidade de funcionários
@@ -70,13 +78,14 @@ def salvarExcel(populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminh
     workbook.remove(workbook.active)  # Remove aba padrão
 
     # ===== DEFINIÇÃO DE ESTILOS =====
-    cor_trabalha = PatternFill(start_color="90EE90", end_color="90EE90", fill_type="solid")  # Verde
-    cor_nao_trabalha = PatternFill(start_color="FFB6C6", end_color="FFB6C6", fill_type="solid")  # Rosa
-    cor_cabecalho = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")  # Azul
-    cor_soma = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")  # Amarelo
+    cor_trabalha = PatternFill(start_color="B9FF80", end_color="B9FF80", fill_type="solid")  # Verde
+    cor_nao_trabalha = PatternFill(start_color="F7FFC9", end_color="F7FFC9", fill_type="solid")  # Laranja
+    cor_cabecalho = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")  # Cinza
+    cor_soma = PatternFill(start_color="8DC9C7", end_color="8DC9C7", fill_type="solid")  # Azul
+    cor_licenca = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")  # Vermelho
 
     fonte_negrito = Font(bold=True)
-    fonte_cabecalho = Font(bold=True, color="FFFFFF")
+    fonte_cabecalho = Font(bold=True, color="000000")
     alinhamento_centro = Alignment(horizontal="center", vertical="center")
     borda = Border(
         left=Side(style='thin'),
@@ -111,15 +120,27 @@ def salvarExcel(populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminh
         sheet['B1'].alignment = alinhamento_centro
         sheet['B1'].fill = cor_cabecalho
 
-        # Coluna C: Último dia do mês anterior
-        sheet['C1'] = 'Último dia do mês anterior'
+        # Coluna C: Início
+        sheet['C1'] = 'Início licença'
         sheet['C1'].font = fonte_cabecalho
         sheet['C1'].alignment = alinhamento_centro
         sheet['C1'].fill = cor_cabecalho
 
-        # Colunas D em diante: Dias do mês
+        # Coluna D: Fim
+        sheet['D1'] = 'Fim licença'
+        sheet['D1'].font = fonte_cabecalho
+        sheet['D1'].alignment = alinhamento_centro
+        sheet['D1'].fill = cor_cabecalho
+
+        # Coluna E: Último dia do mês anterior
+        sheet['E1'] = 'Último dia do mês anterior'
+        sheet['E1'].font = fonte_cabecalho
+        sheet['E1'].alignment = alinhamento_centro
+        sheet['E1'].fill = cor_cabecalho
+
+        # Colunas F em diante: Dias do mês
         for dia in range(1, qtdeDias + 1):
-            coluna = get_column_letter(dia + 3)  # D, E, ...
+            coluna = get_column_letter(dia + 5)  # F, G, ...
             celula = sheet[f'{coluna}1']
             celula.value = f'Dia {dia}'
             celula.font = fonte_cabecalho
@@ -128,7 +149,7 @@ def salvarExcel(populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminh
 
         # Coluna total (se somatório ativo)
         if somatorio:
-            coluna_total = get_column_letter(qtdeDias + 4)
+            coluna_total = get_column_letter(qtdeDias + 6)
             sheet[f'{coluna_total}1'] = 'Total dias escalados'
             sheet[f'{coluna_total}1'].font = fonte_cabecalho
             sheet[f'{coluna_total}1'].fill = cor_cabecalho
@@ -148,14 +169,24 @@ def salvarExcel(populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminh
             sheet[f'B{linha}'].alignment = alinhamento_centro
             sheet[f'B{linha}'].border = borda
 
-            # Coluna C: Último dia do mês anterior (0 ou 1)
-            sheet[f'C{linha}'] = ultimo_dia_mes_anterior[func]
+            # Coluna C: Início licença (inteiro)
+            sheet[f'C{linha}'] = inicios[func]
             sheet[f'C{linha}'].alignment = alinhamento_centro
             sheet[f'C{linha}'].border = borda
 
+            # Coluna D: Fim licença (inteiro)
+            sheet[f'D{linha}'] = fins[func]
+            sheet[f'D{linha}'].alignment = alinhamento_centro
+            sheet[f'D{linha}'].border = borda
+
+            # Coluna E: Último dia do mês anterior (0 ou 1)
+            sheet[f'E{linha}'] = ultimo_dia_mes_anterior[func]
+            sheet[f'E{linha}'].alignment = alinhamento_centro
+            sheet[f'E{linha}'].border = borda
+
             # Colunas de dias
             for dia in range(qtdeDias):
-                coluna = get_column_letter(dia + 4)  # D, E, ...
+                coluna = get_column_letter(dia + 6)  # F, G, ...
                 celula = sheet[f'{coluna}{linha}']
 
                 valor = int(populacao_individuo[func, dia])
@@ -163,15 +194,34 @@ def salvarExcel(populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminh
                 celula.alignment = alinhamento_centro
                 celula.border = borda
 
-                # Cor: Verde (1) ou Rosa (0)
-                celula.fill = cor_trabalha if valor == 1 else cor_nao_trabalha
+                # Verificar se está em período de licença
+                inicio = inicios[func]
+                fim = fins[func]
+                dia_numero = dia + 1
+
+                em_licenca = False
+                if inicio != 0 or fim != 0:  # Se algum for diferente de 0
+                    if inicio < fim:
+                        # Caso normal: licença entre inicio e fim
+                        em_licenca = (dia_numero >= inicio and dia_numero <= fim)
+                    else:
+                        # Caso especial: licença do dia 1 ao dia inicio
+                        em_licenca = (dia_numero <= inicio)
+
+                # Cor: Vermelho (licença) > Verde (1) > Rosa (0)
+                if em_licenca:
+                    celula.fill = cor_licenca
+                else:
+                    # Cor: Verde (1) ou Rosa (0)
+                    celula.fill = cor_trabalha if valor == 1 else cor_nao_trabalha
+
 
             # Fórmula: Total de dias escalados (se somatório ativo)
             if somatorio:
-                coluna_total = get_column_letter(qtdeDias + 4)
+                coluna_total = get_column_letter(qtdeDias + 6)
                 celula_total = sheet[f'{coluna_total}{linha}']
-                primeira_coluna = get_column_letter(4)  # D
-                ultima_coluna = get_column_letter(qtdeDias + 3)
+                primeira_coluna = get_column_letter(6)  # F
+                ultima_coluna = get_column_letter(qtdeDias + 5)
                 celula_total.value = f'=SUM({primeira_coluna}{linha}:{ultima_coluna}{linha})'
                 celula_total.data_type = 'f'
                 celula_total.alignment = alinhamento_centro
@@ -180,17 +230,19 @@ def salvarExcel(populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminh
                 celula_total.fill = cor_soma
 
         # ===== AJUSTA LARGURA DAS COLUNAS =====
-        sheet.column_dimensions['A'].width = 18  # Nome
+        sheet.column_dimensions['A'].width = 22  # Nome
         sheet.column_dimensions['B'].width = 14  # Cargo
-        sheet.column_dimensions['C'].width = 24  # Último dia do mês anterior
+        sheet.column_dimensions['C'].width = 16  # Início licença
+        sheet.column_dimensions['D'].width = 16  # Fim licença
+        sheet.column_dimensions['E'].width = 28  # Último dia do mês anterior
 
         for dia in range(1, qtdeDias + 2):
-            coluna = get_column_letter(dia + 3)
+            coluna = get_column_letter(dia + 5)
             sheet.column_dimensions[coluna].width = 8
 
         if somatorio:
-            coluna_total = get_column_letter(qtdeDias + 4)
-            sheet.column_dimensions[coluna_total].width = 16
+            coluna_total = get_column_letter(qtdeDias + 6)
+            sheet.column_dimensions[coluna_total].width = 20
 
         # ===== RODAPÉ COM SOMATÓRIOS (Se ativo) =====
         if somatorio:
@@ -201,11 +253,13 @@ def salvarExcel(populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminh
             # Rótulos das linhas de somatório
             sheet[f'A{linha_rodape_farm}'] = 'Total de farmacêuticos:'
             sheet[f'A{linha_rodape_farm}'].font = fonte_negrito
-            sheet[f'A{linha_rodape_farm}'].fill = cor_soma
+            for coluna_letra in ['A', 'B', 'C', 'D', 'E']:
+                sheet[f'{coluna_letra}{linha_rodape_farm}'].fill = cor_soma
 
             sheet[f'A{linha_rodape_aux}'] = 'Total de auxiliares:'
             sheet[f'A{linha_rodape_aux}'].font = fonte_negrito
-            sheet[f'A{linha_rodape_aux}'].fill = cor_soma
+            for coluna_letra in ['A', 'B', 'C', 'D', 'E']:
+                sheet[f'{coluna_letra}{linha_rodape_aux}'].fill = cor_soma
 
             # Define o intervalo de linhas (range) de cada grupo para a fórmula do Excel
             inicio_farm = 2
@@ -215,7 +269,7 @@ def salvarExcel(populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminh
             fim_aux = fim_farm + auxiliares
 
             for dia in range(qtdeDias):
-                coluna = get_column_letter(dia + 4)  # Colunas D, E, etc.
+                coluna = get_column_letter(dia + 6)  # Colunas F, G, etc.
 
                 # Somatório Farmacêuticos
                 celula_farm = sheet[f'{coluna}{linha_rodape_farm}']

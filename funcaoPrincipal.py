@@ -2,19 +2,20 @@ import pandas as pd
 import time
 from algoritmoGenetico import algoritmoGenetico
 from edicaoDocumentos.resultadosTeste import resultadosTeste
-from edicaoDocumentos.transformarListaEntrada import transformarListaEntrada
+from edicaoDocumentos.transformarEntradaDoisTurnos import transformarEntradaDoisTurnos
+from edicaoDocumentos.transformarEntradaReescala import transformarEntradaReescala
 
 def funcaoPrincipal():
 
     # =========================================================================
     # Parâmetros do algoritmo genético
     # =========================================================================
-    tipo = 1 #1 para escala ou 2 para reescala
+    tipo = 2 #1 para escala ou 2 para reescala
     turno = 1 #1 para diurno ou 2 para noturno
     num_dias_mes = 30 #total de dias do mês
 
-    dia_reescala = 0 #dia que tem que achar outro
-    funcionario = 0  #nome do funcionario que ira sair
+    dia_reescala = 21 #dia que tem que achar outro
+    funcionario = 'Letícia Nascimento'  #nome do funcionario que ira sair
 
     qtde_individuos = 30
     geracoes = 1500
@@ -28,7 +29,7 @@ def funcaoPrincipal():
     cruzamento = 1 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 porcentagem de herança e ordem sorteadas (cortes verticais)
     qtd_blocos = 50
 
-    mutacao = 1  # 1 bit flip em bloco sorteado a partir de uma linha; 2 bit flip em apenas um gene
+    mutacao = 2  # 1 bit flip em bloco sorteado a partir de uma linha; 2 bit flip em apenas um gene
     probabilidade_mutacao = 0.6 #probabilidade do indivíduo ser mutado
 
 
@@ -44,33 +45,41 @@ def funcaoPrincipal():
         lista_funcionarios_df = pd.read_csv('listaFuncionarios.csv')
         lista_funcionarios = lista_funcionarios_df.values.tolist()
 
-        func_diurnos, func_noturnos, num_dias_mes_anterior, nomes_diurnos, nomes_noturnos, farmaceuticos_diurnos, farmaceuticos_noturnos, auxiliares_diurnos, auxiliares_noturnos = transformarListaEntrada(
-        lista_funcionarios)
+        (func_diurnos, func_noturnos, num_dias_mes_anterior, nomes_diurnos, nomes_noturnos, farmaceuticos_diurnos, farmaceuticos_noturnos,
+         auxiliares_diurnos, auxiliares_noturnos) = transformarEntradaDoisTurnos(lista_funcionarios)
+
+        funcionarios_turno = func_diurnos if turno == 1 else func_noturnos
+        nomes_turno = nomes_diurnos if turno == 1 else nomes_noturnos
+        farm_turno = farmaceuticos_diurnos if turno == 1 else farmaceuticos_noturnos
+        aux_turno = auxiliares_diurnos if turno == 1 else auxiliares_noturnos
+
+
+        (populacao_final, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit, hist_sel_idx, hist_melhor_idx,
+         geracao_campea, id_campeao, historico_fitness_todos) = algoritmoGenetico(funcionarios_turno, nomes_turno, farm_turno,
+                                                        aux_turno, turno,
+                                                        tipo, num_dias_mes, dia_reescala, funcionario,
+                                                        qtde_individuos, geracoes,
+                                                        elitismo, selecao, qtd_pais, tamanho_grupos_torneios,
+                                                        cruzamento, qtd_blocos, mutacao, probabilidade_mutacao)
+
+        tempo_total = time.time() - tempo_inicio
+        print(f'\nTempo Total: {tempo_total:.2f} segundos ({tempo_total / 60:.2f} minutos)')
+
+        print(
+            f"\n\n A Melhor Escala Global foi encontrada na Geração {geracao_campea} (ID do indivíduo: {id_campeao})!")
+
+        resultadosTeste(populacao_final, historico_individuos, historico_fitness, melhor_individuo_global,
+                        hist_sel_fit, hist_sel_idx, hist_melhor_idx, geracao_campea, id_campeao,
+                        historico_fitness_todos, nomes_turno, farm_turno, aux_turno, num_dias_mes, qtde_individuos)
+
+    elif tipo == 2:
+        lista_funcionarios_df = pd.read_excel('melhor_escala_ag.xlsx', engine='openpyxl')
+        lista_funcionarios = lista_funcionarios_df.values.tolist()
+
+        escala_ok, reescala = transformarEntradaReescala(lista_funcionarios, dia_reescala, funcionario)
 
 
 
-    funcionarios_turno = func_diurnos if turno == 1 else func_noturnos
-    nomes_turno = nomes_diurnos if turno == 1 else nomes_noturnos
-    farm_turno = farmaceuticos_diurnos if turno == 1 else farmaceuticos_noturnos
-    aux_turno = auxiliares_diurnos if turno == 1 else auxiliares_noturnos
-
-
-    (populacao_final, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit, hist_sel_idx, hist_melhor_idx,
-     geracao_campea, id_campeao, historico_fitness_todos) = algoritmoGenetico(funcionarios_turno, nomes_turno, farm_turno,
-                                                    aux_turno, turno,
-                                                    tipo, num_dias_mes, dia_reescala, funcionario,
-                                                    qtde_individuos, geracoes,
-                                                    elitismo, selecao, qtd_pais, tamanho_grupos_torneios,
-                                                    cruzamento, qtd_blocos, mutacao, probabilidade_mutacao)
-
-    tempo_total = time.time() - tempo_inicio
-    print(f'\nTempo Total: {tempo_total:.2f} segundos ({tempo_total / 60:.2f} minutos)')
-
-    print(f"\n\n A Melhor Escala Global foi encontrada na Geração {geracao_campea} (ID do indivíduo: {id_campeao})!")
-
-    resultadosTeste(populacao_final, historico_individuos, historico_fitness, melhor_individuo_global,
-                     hist_sel_fit, hist_sel_idx, hist_melhor_idx, geracao_campea, id_campeao,
-                     historico_fitness_todos, nomes_turno, farm_turno, aux_turno, num_dias_mes, qtde_individuos)
 
 
 if __name__ == "__main__":

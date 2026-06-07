@@ -1,7 +1,7 @@
 import numpy as np
 from avalicoesEvalidacoes.validaSolucao import validaSolucao
 
-def blocos(selecionados, populacao, funcionarios, qtde_individuos, qtd_blocos, turno, farmaceuticos, auxiliares, num_dias_mes, tipo):
+def blocos(selecionados, populacao, funcionarios, qtde_individuos, qtd_blocos, turno, farmaceuticos, auxiliares, num_dias_mes):
     """
     Cruzamento dos indivíduos selecionados utilizando blocos:
     O bloco 1 para os farmacêuticos: sorteio entre todos, sem perder a ordem.
@@ -47,7 +47,7 @@ def blocos(selecionados, populacao, funcionarios, qtde_individuos, qtd_blocos, t
 
         filho_completo = np.vstack((filho_farm, filho_aux))
 
-        eh_valido = validaSolucao(filho_completo, num_dias_mes, tipo, funcionarios, turno, farmaceuticos, auxiliares)
+        eh_valido = validaSolucao(filho_completo, num_dias_mes, funcionarios, turno, farmaceuticos, auxiliares)
 
         filhos_gerados.append(eh_valido)
 

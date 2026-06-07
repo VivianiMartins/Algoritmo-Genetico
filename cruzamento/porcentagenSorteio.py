@@ -2,7 +2,7 @@ import numpy as np
 from avalicoesEvalidacoes.validaSolucao import validaSolucao
 
 
-def percentagensSorteio(selecionados, populacao, funcionarios, qtde_individuos, turno, farmaceuticos, auxiliares, num_dias_mes, tipo):
+def percentagensSorteio(selecionados, populacao, funcionarios, qtde_individuos, turno, farmaceuticos, auxiliares, num_dias_mes):
     """
     Cruzamento por porcentagem de herança e ordem sorteadas - cortes verticais. Para cada filho gerado:
     1. Sorteia-se a ordem dos pais (Quem é o Pai A e quem é o Pai B).
@@ -30,7 +30,7 @@ def percentagensSorteio(selecionados, populacao, funcionarios, qtde_individuos, 
         filho[:, :ponto_corte] = pai_A[:, :ponto_corte]
         filho[:, ponto_corte:] = pai_B[:, ponto_corte:]
 
-        filho_valido = validaSolucao(filho, num_dias_mes, tipo, funcionarios, turno, farmaceuticos, auxiliares)
+        filho_valido = validaSolucao(filho, num_dias_mes, funcionarios, turno, farmaceuticos, auxiliares)
         filhos_gerados.append(filho_valido)
 
     if len(filhos_gerados) > 0:

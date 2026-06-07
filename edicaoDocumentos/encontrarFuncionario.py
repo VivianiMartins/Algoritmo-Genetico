@@ -1,23 +1,18 @@
-def encontrarFuncionario(lista_funcionarios, funcionario, num_linhas):
+def encontrarFuncionario(lista_funcionarios, funcionario):
     """
     Procura 'funcionario' na primeira coluna de cada linha de 'lista_funcionarios'.
     """
     funcionario_proc = funcionario.strip().lower()
-    funcionarios_troca = []
-    ids_troca = []
-    cargo_troca = []
 
-    for idx in range(num_linhas):
-        nome = lista_funcionarios[idx]
-        temp = str(nome).strip().lower()
+    match = next(((idx, linha) for idx, linha in enumerate(lista_funcionarios) if str(linha[0]).strip().lower() == funcionario_proc), None)
 
-        if funcionario_proc == temp:
-            funcionarios_troca.append(lista_funcionarios[idx])
-            ids_troca.append(idx)
-            cargo = lista_funcionarios[idx][1].strip().lower()
-            cargo_numerico = 1 if cargo in ["farmacêutico", "farmaceutico"] else 2
-            cargo_troca.append(cargo_numerico)
+    if match is None:
+        print(f"\n>> Funcionário não encontrado para reescala <<")
+        return [], 0, 0
 
-    if len(funcionarios_troca) == 0: print(f"\n>> Funcionário não encontrado para reescala <<")
+    id_troca = match[0]
+    funcionario_troca = match[1]
+    cargo_nome = str(funcionario_troca[1]).strip().lower()
+    cargo_troca = 1 if cargo_nome in ["farmacêutico", "farmaceutico"] else 2
 
-    return funcionarios_troca, ids_troca, cargo_troca
+    return funcionario_troca, id_troca, cargo_troca

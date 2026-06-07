@@ -1,7 +1,7 @@
 import numpy as np
 
 from edicaoDocumentos.salvarExcel import salvarExcel
-from geraPopulacaoInicial import geraPopulacaoInicial
+from algoritmoGeneticoEscala.geraPopulacaoInicial import geraPopulacaoInicial
 from avalicoesEvalidacoes.funcaoFitness import funcaoFitness
 from selecao.roleta import roleta
 from selecao.elitista import elitista
@@ -13,8 +13,8 @@ from cruzamento.porcentagenSorteio import percentagensSorteio
 from mutacao.bitFlipBloco import bitFlipBloco
 from mutacao.bitFlipGene import bitFlipGene
 
-def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tipo, num_dias_mes, dia_reescala_inicio, dia_reescala_fim,
-                      qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao):
+def algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, dia_reescala, turno,
+                              qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao):
     """
     Executa o Algoritmo Genético completo ao longo de várias gerações.
     """
@@ -31,12 +31,13 @@ def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tip
     melhor_fitness_global = -np.inf  # Começa com o menor valor possível
     melhor_geracao_global = 0
     melhor_id_global = 0
+    populacao_atual = matriz_para_reescalar.copy()
 
     # ---------------------------------------------------------
     # População inicial
     # ---------------------------------------------------------
-    populacao_atual = geraPopulacaoInicial(funcionarios, qtde_individuos, num_dias_mes, tipo, dia_reescala_inicio, dia_reescala_fim,  turno, farmaceuticos, auxiliares)
-    salvarExcel(populacao=populacao_atual, lista_nomes_cargos=nomes, farmaceuticos=farmaceuticos, auxiliares=auxiliares, caminho_arquivo='0_população_inicial.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
+    #populacao_atual = geraPopulacaoInicial(funcionarios, qtde_individuos, num_dias_mes, tipo, dia_reescala_inicio, dia_reescala_fim,  turno, farmaceuticos, auxiliares)
+    #salvarExcel(populacao=populacao_atual, lista_nomes_cargos=nomes, farmaceuticos=farmaceuticos, auxiliares=auxiliares, caminho_arquivo='0_população_inicial.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
 
     for geracao in range(geracoes):
         print(f"\n>> Processando Geração {geracao + 1}/{geracoes} <<")
@@ -44,7 +45,7 @@ def algoritmoGenetico(funcionarios, nomes, farmaceuticos, auxiliares, turno, tip
         # ---------------------------------------------------------
         # Fitness
         # ---------------------------------------------------------
-        resultado_fitness = funcaoFitness(populacao_atual, num_dias_mes, tipo, turno, funcionarios, farmaceuticos, auxiliares)
+        resultado_fitness = funcaoFitness(populacao_atual, num_dias_mes, turno, funcionarios, farmaceuticos, auxiliares)
 
         historico_fitness_todos.append(resultado_fitness.copy())
 

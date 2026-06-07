@@ -1,7 +1,7 @@
 import numpy as np
 from avalicoesEvalidacoes.validaSolucao import validaSolucao
 
-def xadrez(selecionados, populacao, funcionarios, qtde_individuos, turno, farmaceuticos, auxiliares, num_dias_mes, tipo):
+def xadrez(selecionados, populacao, funcionarios, qtde_individuos, turno, farmaceuticos, auxiliares, num_dias_mes):
     """
     Cruzamento Block-wise (Bw) 2D conforme a literatura.
     Faz cortes verticais (a cada 7 dias) e horizontais (metades das equipes).
@@ -40,7 +40,7 @@ def xadrez(selecionados, populacao, funcionarios, qtde_individuos, turno, farmac
                 else:
                     filho[lin_inicio:lin_fim, col_inicio:col_fim] = pai_2[lin_inicio:lin_fim, col_inicio:col_fim]
 
-        filho_valido = validaSolucao(filho, num_dias_mes, tipo, funcionarios, turno, farmaceuticos, auxiliares)
+        filho_valido = validaSolucao(filho, num_dias_mes, funcionarios, turno, farmaceuticos, auxiliares)
         filhos_gerados.append(filho_valido)
 
     if len(filhos_gerados) > 0:

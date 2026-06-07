@@ -1,7 +1,7 @@
 import numpy as np
 from avalicoesEvalidacoes._to_int_safe import _to_int_safe
 
-def processarLicenca(funcionario, funcionarios, num_dias_mes, tipo):
+def processarLicenca(funcionario, funcionarios, num_dias_mes):
     """
     Processa período de licença/ferias para um funcionário.
     """

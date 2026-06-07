@@ -1,6 +1,8 @@
 import pandas as pd
 import time
-from algoritmoGenetico import algoritmoGenetico
+from algoritmoGeneticoEscala.algoritmoGeneticoEscala import algoritmoGeneticoEscala
+from algoritmoGeneticoReescala.algoritmoGeneticoReescala import algoritmoGeneticoReescala
+
 from edicaoDocumentos.resultadosTeste import resultadosTeste
 from edicaoDocumentos.transformarEntradaDoisTurnos import transformarEntradaDoisTurnos
 from edicaoDocumentos.transformarEntradaReescala import transformarEntradaReescala
@@ -42,7 +44,7 @@ def funcaoPrincipal():
     tempo_inicio = time.time()  # Inicia o cronômetro para medir o tempo total de execução
 
     if tipo == 1:
-        lista_funcionarios_df = pd.read_csv('listaFuncionarios.csv')
+        lista_funcionarios_df = pd.read_csv('algoritmoGeneticoEscala/listaFuncionarios.csv')
         lista_funcionarios = lista_funcionarios_df.values.tolist()
 
         (func_diurnos, func_noturnos, num_dias_mes_anterior, nomes_diurnos, nomes_noturnos, farmaceuticos_diurnos, farmaceuticos_noturnos,
@@ -55,12 +57,8 @@ def funcaoPrincipal():
 
 
         (populacao_final, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit, hist_sel_idx, hist_melhor_idx,
-         geracao_campea, id_campeao, historico_fitness_todos) = algoritmoGenetico(funcionarios_turno, nomes_turno, farm_turno,
-                                                        aux_turno, turno,
-                                                        tipo, num_dias_mes, dia_reescala, funcionario,
-                                                        qtde_individuos, geracoes,
-                                                        elitismo, selecao, qtd_pais, tamanho_grupos_torneios,
-                                                        cruzamento, qtd_blocos, mutacao, probabilidade_mutacao)
+         geracao_campea, id_campeao, historico_fitness_todos) = algoritmoGeneticoEscala(funcionarios_turno, nomes_turno, farm_turno, aux_turno, turno, num_dias_mes,
+                      qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao)
 
         tempo_total = time.time() - tempo_inicio
         print(f'\nTempo Total: {tempo_total:.2f} segundos ({tempo_total / 60:.2f} minutos)')
@@ -73,12 +71,18 @@ def funcaoPrincipal():
                         historico_fitness_todos, nomes_turno, farm_turno, aux_turno, num_dias_mes, qtde_individuos)
 
     elif tipo == 2:
-        lista_funcionarios_df = pd.read_excel('melhor_escala_ag.xlsx', engine='openpyxl')
+        lista_funcionarios_df = pd.read_excel('algoritmoGeneticoReescala/melhor_escala_ag.xlsx', engine='openpyxl')
         lista_funcionarios = lista_funcionarios_df.values.tolist()
 
-        escala_ok, reescala = transformarEntradaReescala(lista_funcionarios, dia_reescala, funcionario)
+        cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala = transformarEntradaReescala(lista_funcionarios, dia_reescala, funcionario)
 
-
+        if qtd_colaboradores_reescala == 0:
+            print(f"\n>> Funcionário não encontrado para reescala ou não encontrado substitutos <<")
+        else:
+            (populacao_final, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit,
+             hist_sel_idx, hist_melhor_idx,
+             geracao_campea, id_campeao, historico_fitness_todos) = algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, dia_reescala, turno,
+                                                                                            qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao)
 
 
 

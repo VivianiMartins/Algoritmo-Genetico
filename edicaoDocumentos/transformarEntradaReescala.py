@@ -28,8 +28,9 @@ def transformarEntradaReescala(lista_funcionarios, dia_reescala, funcionario):
         cargos_ok = lista_funcionarios[:idx_divisao]
 
     qtd_colaboradores_reescala = len(reescala)
+    qtd_colaboradores_cargos_ok = len(cargos_ok)
 
     matriz_nao_reescalar = [linha[:dias_ok] for linha in reescala]
     matriz_para_reescalar = [linha[dias_a_reescalar:] for linha in reescala]
 
-    return cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala
+    return cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, qtd_colaboradores_cargos_ok

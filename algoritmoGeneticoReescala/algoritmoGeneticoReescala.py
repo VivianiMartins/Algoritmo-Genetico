@@ -13,8 +13,9 @@ from cruzamento.porcentagenSorteio import percentagensSorteio
 from mutacao.bitFlipBloco import bitFlipBloco
 from mutacao.bitFlipGene import bitFlipGene
 
-def algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, qtd_colaboradores_cargos_ok, dia_reescala, turno,
-                              taxa_troca_ideal, qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao):
+def algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, funcionario_troca, id_troca, num_dias_mes, cargo_troca, farmaceuticos, auxiliares, escala_original_numerica,
+                              dia_reescala, turno, taxa_troca_ideal,
+                              qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao):
     """
     Executa o Algoritmo Genético completo ao longo de várias gerações.
     """
@@ -31,17 +32,14 @@ def algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reesc
     melhor_fitness_global = -np.inf  # Começa com o menor valor possível
     melhor_geracao_global = 0
     melhor_id_global = 0
+    id_troca_recorte = id_troca if cargo_troca == 1 else id_troca - farmaceuticos
+    idx_dia_reescala = dia_reescala - 1
 
 
     # ---------------------------------------------------------
     # População inicial
     # ---------------------------------------------------------
-    array_nao_reescalar = np.array(matriz_nao_reescalar, dtype=np.int8)
-    matriz_para_reescalar = np.array(matriz_para_reescalar, dtype=np.int8)
-    array_cargos_ok = np.array(cargos_ok, dtype=np.int8)
-
-
-    populacao_atual = geraPopulacaoInicialReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, qtd_colaboradores_cargos_ok, dia_reescala, turno, qtde_individuos, taxa_troca_ideal)
+    populacao_atual = geraPopulacaoInicialReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, funcionario_troca, id_troca, id_troca_recorte, num_dias_mes, cargo_troca, farmaceuticos, auxiliares, idx_dia_reescala, turno, qtde_individuos, taxa_troca_ideal, nomes, escala_original_numerica)
     #salvarExcel(populacao=populacao_atual, lista_nomes_cargos=nomes, farmaceuticos=farmaceuticos, auxiliares=auxiliares, caminho_arquivo='0_população_inicial.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
 
     for geracao in range(geracoes):

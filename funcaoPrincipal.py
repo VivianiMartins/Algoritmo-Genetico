@@ -35,8 +35,8 @@ def funcaoPrincipal():
     num_dias_mes = 30  # total de dias do mês
 
     # usados apenas na reescala:
-    dia_reescala = 21  # dia que tem que achar outro
-    funcionario = 'Letícia Nascimento'  # nome do funcionario que ira sair
+    dia_reescala = 12  # dia que tem que achar outro para substituir o funcionario abaixo
+    funcionario = 'Enzo Ramos'  # nome do funcionario que irá sair
     taxa_troca_ideal = 0.8  # taxa de troca ideal para o algoritmo genético
 
 
@@ -78,18 +78,27 @@ def funcaoPrincipal():
     elif tipo == 2:
         lista_funcionarios_df = pd.read_excel('algoritmoGeneticoReescala/melhor_escala_ag.xlsx', engine='openpyxl')
         lista_funcionarios = lista_funcionarios_df.values.tolist()
-        funcionarios = np.array(lista_funcionarios, dtype=np.int8)
 
-
-        cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, qtd_colaboradores_cargos_ok = transformarEntradaReescala(lista_funcionarios, dia_reescala, funcionario)
+        cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, qtd_colaboradores_cargos_ok = transformarEntradaReescala(lista_funcionarios, dia_reescala, funcionario)
 
         if qtd_colaboradores_reescala == 0:
             print(f"\n>> Funcionário não encontrado para reescala ou não encontrado substitutos <<")
         else:
+            funcionarios = np.array(lista_funcionarios, dtype=object)
+            escala_original_numerica = funcionarios[:,5:].astype(np.int8)
+
+            if cargo_troca == 1:
+                farmaceuticos = qtd_colaboradores_reescala
+                auxiliares = qtd_colaboradores_cargos_ok
+            else:
+                farmaceuticos = qtd_colaboradores_cargos_ok
+                auxiliares = qtd_colaboradores_reescala
+
             (populacao_final, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit,
              hist_sel_idx, hist_melhor_idx,
-             geracao_campea, id_campeao, historico_fitness_todos) = algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, qtd_colaboradores_cargos_ok, dia_reescala, turno,
-                                                                                            taxa_troca_ideal, qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao)
+             geracao_campea, id_campeao, historico_fitness_todos) = algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, funcionario_troca, id_troca, num_dias_mes, cargo_troca, farmaceuticos, auxiliares, escala_original_numerica,
+                                                                                            dia_reescala, turno, taxa_troca_ideal,
+                                                                                            qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao)
 
 
 

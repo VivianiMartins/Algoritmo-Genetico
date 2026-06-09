@@ -1,6 +1,6 @@
 import numpy as np
+from avalicoesEvalidacoes._pode_trabalhar import _pode_trabalhar
 from avalicoesEvalidacoes.processarLicenca import processarLicenca
-
 _cache_max_dias = {}
 
 def validaSolucao(individuo, num_dias_mes, funcionarios, turno, farmaceuticos, auxiliares):
@@ -10,9 +10,7 @@ def validaSolucao(individuo, num_dias_mes, funcionarios, turno, farmaceuticos, a
 
     individuo_valido = individuo.copy()
     max_auxiliar = int(auxiliares // 2)
-
-    if turno == 1: min_auxiliar = 16
-    else: min_auxiliar = 12
+    min_auxiliar = 16 if turno == 1 else 12
 
     # ---------------------------------------------------------
     # Aplicar bloqueio de férias/licença para cada funcionário
@@ -36,11 +34,8 @@ def validaSolucao(individuo, num_dias_mes, funcionarios, turno, farmaceuticos, a
     # ---------------------------------------------------------
     array_ultimos_dias = np.array([funcionario[-1] for funcionario in funcionarios])
     matriz_comparacao = np.hstack((array_ultimos_dias.reshape(-1, 1), individuo_valido))
-    consecutivos = (matriz_comparacao[:, 1:] == 1) & (
-            matriz_comparacao[:, :-1] == 1)  # matriz de True/False do exato tamanho do 'individuo_valido'
-    if np.any(consecutivos):
-        individuo_valido[
-            consecutivos] = 0  # corrige para 0 onde estava com 1. 111 (false, true, true) virará 100, por exemplo. 110 (false, true, false) virará 100.
+    consecutivos = (matriz_comparacao[:, 1:] == 1) & (matriz_comparacao[:, :-1] == 1)
+    if np.any(consecutivos): individuo_valido[consecutivos] = 0
 
     # ---------------------------------------------------------
     # verificação do total de escalas por mês
@@ -57,8 +52,7 @@ def validaSolucao(individuo, num_dias_mes, funcionarios, turno, farmaceuticos, a
 
         for func_idx in funcionarios_com_excesso:
             dias_trabalhados = np.where(individuo_valido[func_idx, :] == 1)[0]
-            dias_trabalhados = dias_trabalhados[
-                dias_trabalhados != 0]  # Exclui o dia 0, que representa o dia anterior
+            dias_trabalhados = dias_trabalhados[dias_trabalhados != 0]
             dias_para_folgar = np.random.choice(dias_trabalhados, size=excesso[func_idx], replace=False)
             individuo_valido[func_idx, dias_para_folgar] = 0
 
@@ -73,66 +67,30 @@ def validaSolucao(individuo, num_dias_mes, funcionarios, turno, farmaceuticos, a
         qtde_farm = len(farm_trabalhando)
 
         if qtde_farm > 1:
-            remover = np.random.choice(farm_trabalhando, size=(qtde_farm - 1),
-                                       replace=False)  # sorteia os excedentes para folgar, deixando apenas 1
+            remover = np.random.choice(farm_trabalhando, size=(qtde_farm - 1), replace=False)
             individuo_valido[remover, dia] = 0
         elif qtde_farm == 0:
-            candidatos = []
-            for f in range(
-                    farmaceuticos):  # tenta achar candidatos que não tenham trabalhado no dia anterior ou no dia seguinte, e que não tenham atingido o limite de dias trabalhados no mês
-                dias_disp = dias_disponiveis_por_func[f] if dias_disponiveis_por_func[f] is not None else list(
-                    range(1, num_dias_mes + 1))
-                dia_1based = dia + 1
-
-                if dia_1based not in dias_disp: continue
-
-                ontem = array_ultimos_dias[f] if dia == 0 else individuo_valido[f, dia - 1]
-                amanha = 0 if dia == num_dias_mes - 1 else individuo_valido[f, dia + 1]
-
-                if blocked_mask[f, dia]: continue
-
-                if ontem == 0 and amanha == 0 and np.sum(individuo_valido[f, :]) < max_dias: candidatos.append(f)
-
+            candidatos = [f for f in range(farmaceuticos) if
+                          _pode_trabalhar(f, dia, individuo_valido, dias_disponiveis_por_func, array_ultimos_dias, num_dias_mes, blocked_mask, max_dias)]
             if candidatos:
-                escolhido = np.random.choice(candidatos)
-                individuo_valido[escolhido, dia] = 1
-                individuo_valido[blocked_mask] = 0
-            # se não houver candidatos, não faz nada e espera-se que seja eliminado na próxima geração por causa do fitness baixo (0 ou -inf)
+                individuo_valido[np.random.choice(candidatos), dia] = 1
 
         # auxiliares
         aux_trabalhando = np.where(individuo_valido[farmaceuticos:, dia] == 1)[0]
         qtde_aux = len(aux_trabalhando)
 
         if qtde_aux > max_auxiliar:
-            remover = np.random.choice(aux_trabalhando, size=(qtde_aux - max_auxiliar),
-                                       replace=False)  # sorteia quem irá remover, pelo seu índice
+            remover = np.random.choice(aux_trabalhando, size=(qtde_aux - max_auxiliar), replace=False)
             individuo_valido[remover + farmaceuticos, dia] = 0
         elif qtde_aux < min_auxiliar:
             falta = min_auxiliar - qtde_aux
-            candidatos = []
-
-            for a in range(num_auxiliares):
-                idx = a + farmaceuticos
-
-                dias_disp = dias_disponiveis_por_func[idx] if dias_disponiveis_por_func[idx] is not None else list(
-                    range(1, num_dias_mes + 1))
-                dia_1based = dia + 1
-
-                if dia_1based not in dias_disp: continue
-
-                if individuo_valido[idx, dia] == 0:
-                    ontem = array_ultimos_dias[idx] if dia == 0 else individuo_valido[idx, dia - 1]
-                    amanha = 0 if dia == num_dias_mes - 1 else individuo_valido[idx, dia + 1]
-
-                    if blocked_mask[idx, dia]: continue
-                    if ontem == 0 and amanha == 0 and np.sum(
-                            individuo_valido[idx, :]) < max_dias: candidatos.append(idx)
+            candidatos = [a + farmaceuticos for a in range(num_auxiliares) if
+                          _pode_trabalhar(a + farmaceuticos, dia, individuo_valido, dias_disponiveis_por_func, array_ultimos_dias, num_dias_mes, blocked_mask, max_dias)]
 
             if candidatos:
                 qtd_adicionar = min(falta, len(candidatos))
                 escolhidos = np.random.choice(candidatos, size=qtd_adicionar, replace=False)
                 individuo_valido[escolhidos, dia] = 1
-                individuo_valido[blocked_mask] = 0
             # se não houver candidatos, não faz nada e espera-se que seja eliminado na próxima geração por causa do fitness baixo (0 ou -inf)
 
 

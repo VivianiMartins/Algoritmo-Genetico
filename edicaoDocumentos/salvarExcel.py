@@ -206,7 +206,7 @@ def salvarExcel(populacao, lista_nomes_cargos, farmaceuticos, auxiliares, caminh
                         em_licenca = (dia_numero >= inicio and dia_numero <= fim)
                     else:
                         # Caso especial: licença do dia 1 ao dia inicio
-                        em_licenca = (dia_numero <= inicio)
+                        em_licenca = (dia_numero >= 1 and dia_numero <= fim)
 
                 # Cor: Vermelho (licença) > Verde (1) > Rosa (0)
                 if em_licenca:

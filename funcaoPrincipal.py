@@ -12,26 +12,27 @@ from edicaoDocumentos.transformarEntradaReescala import transformarEntradaReesca
 def funcaoPrincipal():
 
     # =========================================================================
-    # Parâmetros do algoritmo genético
+    # Parâmetros
     # =========================================================================
-    tipo = 2 #1 para escala ou 2 para reescala
+    tipo = 1 #1 para escala ou 2 para reescala
     turno = 1 #1 para diurno ou 2 para noturno
-
-    qtde_individuos = 10
-    geracoes = 50
+    # __________________________________________________________________________________________________________________
+    # Parâmetros do algoritmo genético
+    qtde_individuos = 30
+    geracoes = 1500
 
     elitismo = True  # False para não manter o melhor indivíduo na próxima geração e True manter o melhor na próxima geração
 
-    selecao = 2 #1 para roleta; 2 para elitismo; 3 para torneio; 4 para Maximax e Maximin
+    selecao = 1 #1 para roleta; 2 para elitismo; 3 para torneio; 4 para Maximax e Maximin
     qtd_pais = 2
     tamanho_grupos_torneios = 0
 
-    cruzamento = 2 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 porcentagem de herança e ordem sorteadas (cortes verticais)
-    qtd_blocos = 5
+    cruzamento = 1 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 porcentagem de herança e ordem sorteadas (cortes verticais)
+    qtd_blocos = 20
 
     mutacao = 2  # 1 bit flip em bloco sorteado a partir de uma linha; 2 bit flip em apenas um gene
-    probabilidade_mutacao = 0.6 #probabilidade do indivíduo ser mutado
-
+    probabilidade_mutacao = 0.2 #probabilidade do indivíduo ser mutado
+    #__________________________________________________________________________________________________________________
     #usado apenas na escala
     num_dias_mes = 30  # total de dias do mês
 
@@ -40,7 +41,7 @@ def funcaoPrincipal():
     funcionario = 'Enzo Ramos'  # nome do funcionario que irá sair
     taxa_troca_ideal = 0.1  # taxa de troca ideal para o algoritmo genético - população inicial
 
-
+    # __________________________________________________________________________________________________________________
     if tipo not in [1, 2]: raise ValueError("Deve ser 1 para escala ou 2 para reescala")
     elif tipo == 1: print('=========== Geração para escala ===========\n')
     else: print('=========== Geração para reescala ===========\n')

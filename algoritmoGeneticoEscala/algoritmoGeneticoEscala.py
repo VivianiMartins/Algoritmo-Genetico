@@ -2,16 +2,16 @@ import numpy as np
 
 from algoritmoGeneticoEscala.geraPopulacaoInicial import geraPopulacaoInicial
 from edicaoDocumentos.salvarExcel import salvarExcel
-from avalicoesEvalidacoes.funcaoFitness import funcaoFitness
+from algoritmoGeneticoEscala.avaliacoesEvalidacoes.funcaoFitnessEscala import funcaoFitnessEscala
 from selecao.roleta import roleta
 from selecao.elitista import elitista
 from selecao.torneio import torneio
 from selecao.maximaxMaximin import maximaxMaximin
-from cruzamento.blocos import blocos
-from cruzamento.xadrez import xadrez
-from cruzamento.porcentagenSorteio import percentagensSorteio
-from mutacao.bitFlipBloco import bitFlipBloco
-from mutacao.bitFlipGene import bitFlipGene
+from algoritmoGeneticoEscala.cruzamento.blocos import blocos
+from algoritmoGeneticoEscala.cruzamento.xadrez import xadrez
+from algoritmoGeneticoEscala.cruzamento.porcentagenSorteio import percentagensSorteio
+from algoritmoGeneticoEscala.mutacao.bitFlipBloco import bitFlipBloco
+from algoritmoGeneticoEscala.mutacao.bitFlipGene import bitFlipGene
 
 def algoritmoGeneticoEscala(funcionarios, nomes, farmaceuticos, auxiliares, turno, num_dias_mes,
                       qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao):
@@ -44,7 +44,7 @@ def algoritmoGeneticoEscala(funcionarios, nomes, farmaceuticos, auxiliares, turn
         # ---------------------------------------------------------
         # Fitness
         # ---------------------------------------------------------
-        resultado_fitness = funcaoFitness(populacao_atual, num_dias_mes, turno, funcionarios, farmaceuticos, auxiliares)
+        resultado_fitness = funcaoFitnessEscala(populacao_atual, num_dias_mes, turno, funcionarios, farmaceuticos, auxiliares)
 
         historico_fitness_todos.append(resultado_fitness.copy())
 

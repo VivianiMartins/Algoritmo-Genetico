@@ -1,5 +1,5 @@
 import numpy as np
-from avalicoesEvalidacoes.validaSolucao import validaSolucao  # Ajuste o caminho se necessário
+from algoritmoGeneticoEscala.avaliacoesEvalidacoes.validaSolucaoEscala import validaSolucaoEscala  # Ajuste o caminho se necessário
 
 _cache_max_dias = {}
 
@@ -41,6 +41,6 @@ def geraPopulacaoInicial(funcionarios, qtde_individuos, num_dias_mes, turno, far
 
             populacao[cont_pessoa, :, cont_individuo] = funcionario
 
-        populacao[:, :, cont_individuo] = validaSolucao(individuo=populacao[:, :, cont_individuo], num_dias_mes=num_dias_mes, funcionarios=funcionarios, turno=turno, farmaceuticos=farmaceuticos, auxiliares=auxiliares)
+        populacao[:, :, cont_individuo] = validaSolucaoEscala(individuo=populacao[:, :, cont_individuo], num_dias_mes=num_dias_mes, funcionarios=funcionarios, turno=turno, farmaceuticos=farmaceuticos, auxiliares=auxiliares)
 
     return populacao

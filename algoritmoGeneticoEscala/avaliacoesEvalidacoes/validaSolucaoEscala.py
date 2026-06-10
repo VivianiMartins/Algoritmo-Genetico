@@ -3,7 +3,7 @@ from avalicoesEvalidacoes._pode_trabalhar import _pode_trabalhar
 from avalicoesEvalidacoes.processarLicenca import processarLicenca
 _cache_max_dias = {}
 
-def validaSolucao(individuo, num_dias_mes, funcionarios, turno, farmaceuticos, auxiliares):
+def validaSolucaoEscala(individuo, num_dias_mes, funcionarios, turno, farmaceuticos, auxiliares):
     """
     Verifica se a escala de um indivíduo (matriz 2D) é válida perante as regras e retorna individuo (array 2D consertado)
     """

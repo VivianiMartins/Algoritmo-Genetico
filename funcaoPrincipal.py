@@ -3,6 +3,7 @@ import pandas as pd
 import time
 from algoritmoGeneticoEscala.algoritmoGeneticoEscala import algoritmoGeneticoEscala
 from algoritmoGeneticoReescala.algoritmoGeneticoReescala import algoritmoGeneticoReescala
+from edicaoDocumentos.graficoDispersaoHamming import graficoDispersaoHamming
 
 from edicaoDocumentos.resultadosTeste import resultadosTeste
 from edicaoDocumentos.transformarEntradaDoisTurnos import transformarEntradaDoisTurnos
@@ -16,8 +17,8 @@ def funcaoPrincipal():
     tipo = 2 #1 para escala ou 2 para reescala
     turno = 1 #1 para diurno ou 2 para noturno
 
-    qtde_individuos = 31
-    geracoes = 1500
+    qtde_individuos = 10
+    geracoes = 50
 
     elitismo = True  # False para não manter o melhor indivíduo na próxima geração e True manter o melhor na próxima geração
 
@@ -25,8 +26,8 @@ def funcaoPrincipal():
     qtd_pais = 2
     tamanho_grupos_torneios = 0
 
-    cruzamento = 1 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 porcentagem de herança e ordem sorteadas (cortes verticais)
-    qtd_blocos = 50
+    cruzamento = 2 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 porcentagem de herança e ordem sorteadas (cortes verticais)
+    qtd_blocos = 5
 
     mutacao = 2  # 1 bit flip em bloco sorteado a partir de uma linha; 2 bit flip em apenas um gene
     probabilidade_mutacao = 0.6 #probabilidade do indivíduo ser mutado
@@ -37,7 +38,7 @@ def funcaoPrincipal():
     # usados apenas na reescala:
     dia_reescala = 12  # dia que tem que achar outro para substituir o funcionario abaixo
     funcionario = 'Enzo Ramos'  # nome do funcionario que irá sair
-    taxa_troca_ideal = 0.8  # taxa de troca ideal para o algoritmo genético
+    taxa_troca_ideal = 0.1  # taxa de troca ideal para o algoritmo genético - população inicial
 
 
     if tipo not in [1, 2]: raise ValueError("Deve ser 1 para escala ou 2 para reescala")
@@ -79,7 +80,7 @@ def funcaoPrincipal():
         lista_funcionarios_df = pd.read_excel('algoritmoGeneticoReescala/melhor_escala_ag.xlsx', engine='openpyxl')
         lista_funcionarios = lista_funcionarios_df.values.tolist()
 
-        cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, qtd_colaboradores_cargos_ok = transformarEntradaReescala(lista_funcionarios, dia_reescala, funcionario)
+        cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, nomes_lista, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, qtd_colaboradores_cargos_ok, dias_resto_mes = transformarEntradaReescala(lista_funcionarios, dia_reescala, funcionario)
 
         if qtd_colaboradores_reescala == 0:
             print(f"\n>> Funcionário não encontrado para reescala ou não encontrado substitutos <<")
@@ -94,13 +95,22 @@ def funcaoPrincipal():
                 farmaceuticos = qtd_colaboradores_cargos_ok
                 auxiliares = qtd_colaboradores_reescala
 
-            (populacao_final, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit,
-             hist_sel_idx, hist_melhor_idx,
-             geracao_campea, id_campeao, historico_fitness_todos) = algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, funcionario_troca, id_troca, num_dias_mes, cargo_troca, farmaceuticos, auxiliares, escala_original_numerica,
-                                                                                            dia_reescala, turno, taxa_troca_ideal,
-                                                                                            qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao)
+            (populacao_final, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit, hist_sel_idx, hist_melhor_idx,
+         geracao_campea, id_campeao, historico_fitness_todos, historico_hamming) = algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, nomes_lista, id_troca, num_dias_mes, cargo_troca, farmaceuticos, auxiliares, dias_resto_mes,
+                              escala_original_numerica, dia_reescala, taxa_troca_ideal , turno,
+                              qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao)
 
+            tempo_total = time.time() - tempo_inicio
+            print(f'\nTempo Total: {tempo_total:.2f} segundos ({tempo_total / 60:.2f} minutos)')
 
+            print(
+                f"\n\n A Melhor Escala Global foi encontrada na Geração {geracao_campea} (ID do indivíduo: {id_campeao})!")
+
+            resultadosTeste(populacao_final, historico_individuos, historico_fitness, melhor_individuo_global,
+                            hist_sel_fit, hist_sel_idx, hist_melhor_idx, geracao_campea, id_campeao,
+                            historico_fitness_todos, nomes_lista, farmaceuticos, auxiliares, num_dias_mes, qtde_individuos)
+
+            graficoDispersaoHamming(historico_hamming, qtde_individuos)
 
 if __name__ == "__main__":
     funcaoPrincipal()

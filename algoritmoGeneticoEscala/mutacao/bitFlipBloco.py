@@ -1,5 +1,5 @@
 import numpy as np
-from avalicoesEvalidacoes.validaSolucao import validaSolucao
+from algoritmoGeneticoEscala.avaliacoesEvalidacoes.validaSolucaoEscala import validaSolucaoEscala
 
 def bitFlipBloco(probabilidade_mutacao, populacao, funcionarios, turno, farmaceuticos, auxiliares, num_dias_mes):
     """
@@ -22,7 +22,7 @@ def bitFlipBloco(probabilidade_mutacao, populacao, funcionarios, turno, farmaceu
             else:  # ímpar: flipa do início até o dia sorteado (para trás)
                 individuo_atual[:, :dia_sorteado + 1] = 1 - individuo_atual[:, :dia_sorteado + 1]
 
-            individuo_atual = validaSolucao(individuo_atual, num_dias_mes, funcionarios, turno, farmaceuticos, auxiliares)
+            individuo_atual = validaSolucaoEscala(individuo_atual, num_dias_mes, funcionarios, turno, farmaceuticos, auxiliares)
 
         mutados.append(individuo_atual)
 

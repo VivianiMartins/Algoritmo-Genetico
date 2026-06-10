@@ -1,5 +1,5 @@
 import numpy as np
-from edicaoDocumentos.validarValorInteiro import validarValorInteiro
+from avalicoesEvalidacoes.validarValorInteiro import validarValorInteiro
 
 def transformarEntradaDoisTurnos(lista_funcionarios):
     """

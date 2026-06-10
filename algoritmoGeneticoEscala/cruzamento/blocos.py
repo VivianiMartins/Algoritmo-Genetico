@@ -1,5 +1,5 @@
 import numpy as np
-from avalicoesEvalidacoes.validaSolucao import validaSolucao
+from algoritmoGeneticoEscala.avaliacoesEvalidacoes.validaSolucaoEscala import validaSolucaoEscala
 
 def blocos(selecionados, populacao, funcionarios, qtde_individuos, qtd_blocos, turno, farmaceuticos, auxiliares, num_dias_mes):
     """
@@ -8,9 +8,9 @@ def blocos(selecionados, populacao, funcionarios, qtde_individuos, qtd_blocos, t
     O bloco dos auxiliares: sorteado entre a 'qtd_blocos' definida,
     mantendo a ordem dentro de cada bloco.
     """
-    individuosSelecionados = populacao[:, :, selecionados]
-    num_pais_selecionados = individuosSelecionados.shape[2]
-    num_funcionarios_total = individuosSelecionados.shape[0]
+    individuos_selecionados = populacao[:, :, selecionados]
+    num_pais_selecionados = individuos_selecionados.shape[2]
+    num_funcionarios_total = individuos_selecionados.shape[0]
     filhos_gerados = []
 
     padroes_farm = np.random.randint(0, 2, size=(qtde_individuos, farmaceuticos))
@@ -20,8 +20,8 @@ def blocos(selecionados, populacao, funcionarios, qtde_individuos, qtd_blocos, t
     for filho_idx in range(qtde_individuos):
         idx_p1, idx_p2 = np.random.choice(num_pais_selecionados, size=2, replace=False)
 
-        pai_1 = individuosSelecionados[:, :, idx_p1]
-        pai_2 = individuosSelecionados[:, :, idx_p2]
+        pai_1 = individuos_selecionados[:, :, idx_p1]
+        pai_2 = individuos_selecionados[:, :, idx_p2]
 
         farms_1 = pai_1[:farmaceuticos, :]
         auxiliares_1 = pai_1[farmaceuticos:, :]
@@ -47,7 +47,7 @@ def blocos(selecionados, populacao, funcionarios, qtde_individuos, qtd_blocos, t
 
         filho_completo = np.vstack((filho_farm, filho_aux))
 
-        eh_valido = validaSolucao(filho_completo, num_dias_mes, funcionarios, turno, farmaceuticos, auxiliares)
+        eh_valido = validaSolucaoEscala(filho_completo, num_dias_mes, funcionarios, turno, farmaceuticos, auxiliares)
 
         filhos_gerados.append(eh_valido)
 

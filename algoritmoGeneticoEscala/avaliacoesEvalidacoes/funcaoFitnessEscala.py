@@ -2,18 +2,14 @@ import math
 import numpy as np
 from avalicoesEvalidacoes._to_int_safe import _to_int_safe
 
-def funcaoFitness(populacao, num_dias_mes, turno, funcionarios, farmaceuticos, auxiliares):
+def funcaoFitnessEscala(populacao, num_dias_mes, turno, funcionarios, farmaceuticos, auxiliares):
     """
     Avaliação da população, atribuindo valores de acordo com que chega na solução ideal
     """
 
     avaliacaoFitness = np.zeros(populacao.shape[2])
-    if (turno == 1):
-        max_auxiliar = int(auxiliares // 2)
-        min_auxiliar = 16
-    else:
-        max_auxiliar = int(auxiliares // 2)
-        min_auxiliar = 12
+    max_auxiliar = int(auxiliares // 2)
+    min_auxiliar = 16 if turno == 1 else 12
 
     for cont in range(populacao.shape[2]):
         individuo = populacao[:, :, cont]

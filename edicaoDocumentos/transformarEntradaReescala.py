@@ -1,5 +1,7 @@
 import numpy as np
 from edicaoDocumentos.encontrarFuncionario import encontrarFuncionario
+from avalicoesEvalidacoes.validarValorInteiro import validarValorInteiro
+
 
 def transformarEntradaReescala(lista_funcionarios, dia_reescala, funcionario):
     """
@@ -54,4 +56,17 @@ def transformarEntradaReescala(lista_funcionarios, dia_reescala, funcionario):
     if cargo_troca == 1: nomes = np.vstack((nomes_nao_reescalar, nomes_cargos_ok))
     else: nomes = np.vstack((nomes_cargos_ok, nomes_nao_reescalar))
 
-    return cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, qtd_colaboradores_cargos_ok
+    dias_resto_mes = (matriz_para_reescalar.shape[1]) - 1
+
+    nomes_lista = []
+
+    for idx, funcionario in enumerate(nomes):
+        nome = funcionario[0].strip()
+        cargo = funcionario[1].strip().lower()
+        cargo_numerico = 1 if cargo in ["farmacêutico", "farmaceutico"] else 2
+        ultimo_dia_mes = funcionario[-1]
+        inicio = validarValorInteiro(funcionario[2], "inicio", idx)
+        fim = validarValorInteiro(funcionario[3], "fim", idx)
+        nomes_lista.append((nome, cargo_numerico, ultimo_dia_mes, inicio, fim))
+
+    return cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, nomes_lista, funcionario_troca, id_troca, num_dias_mes, cargo_troca, qtd_colaboradores_reescala, qtd_colaboradores_cargos_ok, dias_resto_mes

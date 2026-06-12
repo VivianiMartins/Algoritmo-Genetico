@@ -3,47 +3,22 @@ from algoritmoGeneticoReescala.avalicoesEvalidacoes.validaSolucaoReescala import
 
 def geraPopulacaoInicialReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, id_troca, id_troca_recorte,
                                  num_dias_mes, cargo_troca, farmaceuticos, auxiliares,
-                                 idx_dia_reescala, turno, qtde_individuos, taxa_troca_ideal, nomes, escala_original_numerica, dias_resto_mes):
+                                 idx_dia_reescala, turno, qtde_individuos, nomes, escala_original_numerica, dias_resto_mes):
     """
     Gera população inicial válida para algoritmo genético de escalas de trabalho.
     taxa_troca_ideal: probabilidade de usar os candidatos ideais.
     """
     reescalar = matriz_para_reescalar[:, 1:]
     total_colaboradores = farmaceuticos + auxiliares
-    num_colunas_matriz = matriz_para_reescalar.shape[1]
     qtd_colaboradores_reescala = farmaceuticos if cargo_troca == 1 else auxiliares
-
-    # Procurar os melhores candidatos para reescala
-    mask_validos = np.ones(qtd_colaboradores_reescala, dtype=bool)
-    if 0 <= id_troca_recorte < qtd_colaboradores_reescala: mask_validos[id_troca_recorte] = False
-    indices_validos = np.where(mask_validos)[0]
-    candidatos = []
-    mask_dia_troca_livre = matriz_para_reescalar[:, 1] == 0
-
-    if num_colunas_matriz >= 2:
-        mask_consecutivos = (matriz_para_reescalar[:, :-1] == 0) & (matriz_para_reescalar[:, 1:] == 0)
-        mask = mask_validos & mask_consecutivos.any(axis=1) & mask_dia_troca_livre
-        candidatos = np.where(mask)[0].tolist()
-
-    indices_livres_dia = np.where(mask_validos & mask_dia_troca_livre)[0]
-    indices_validos_fallback = indices_livres_dia if len(indices_livres_dia) > 0 else indices_validos
 
     populacao = np.zeros((total_colaboradores, num_dias_mes, qtde_individuos), dtype=np.int8)
     janela = np.zeros((qtd_colaboradores_reescala, dias_resto_mes, qtde_individuos), dtype=np.int8)
 
     for cont_individuo in range(qtde_individuos):
         individuo_matriz = np.copy(reescalar)
-        usar_ideal = np.random.random() <= taxa_troca_ideal
-        tem_candidatos = len(candidatos) > 0
-
-        if usar_ideal and tem_candidatos:
-            substituto = np.random.choice(candidatos)
-        else:
-            substituto = np.random.choice(indices_validos_fallback)
-            individuo_matriz[substituto, :] = np.random.randint(0, 2, size=dias_resto_mes)
 
         individuo_matriz[id_troca_recorte, 0] = 0  # Tira o funcionário da escala
-        individuo_matriz[substituto, 0] = 1  # Coloca o substituto sorteado
 
         janela[:, :, cont_individuo] = individuo_matriz
         individuo_quase_completo = np.hstack((matriz_nao_reescalar, individuo_matriz))

@@ -15,7 +15,7 @@ from selecao.torneio import torneio
 
 
 def algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, nomes_lista, id_troca, num_dias_mes, cargo_troca, farmaceuticos, auxiliares, dias_resto_mes,
-                              escala_original_numerica, dia_reescala, taxa_troca_ideal , turno,
+                              escala_original_numerica, dia_reescala, turno,
                               qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao):
     """
     Executa o Algoritmo Genético completo ao longo de várias gerações.
@@ -26,6 +26,7 @@ def algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reesc
     historico_individuos = []
     historico_fitness = []
     historico_hamming = []
+    historico_alteracoes = []
     historico_selecionados_fitness = []
     historico_selecionados_indices = []
     historico_melhor_idx = []
@@ -41,7 +42,7 @@ def algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reesc
     # ---------------------------------------------------------
     # População inicial
     # ---------------------------------------------------------
-    populacao_atual = geraPopulacaoInicialReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, id_troca, id_troca_recorte, num_dias_mes, cargo_troca, farmaceuticos, auxiliares, idx_dia_reescala, turno, qtde_individuos, taxa_troca_ideal, nomes, escala_original_numerica, dias_resto_mes)
+    populacao_atual = geraPopulacaoInicialReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, id_troca, id_troca_recorte, num_dias_mes, cargo_troca, farmaceuticos, auxiliares, idx_dia_reescala, turno, qtde_individuos, nomes, escala_original_numerica, dias_resto_mes)
     salvarExcel(populacao=populacao_atual, lista_nomes_cargos=nomes_lista, farmaceuticos=farmaceuticos, auxiliares=auxiliares, caminho_arquivo='0_população_inicial.xlsx', num_dias_mes=num_dias_mes, salvar_completo=True, somatorio=True)
 
     for geracao in range(geracoes):
@@ -50,10 +51,11 @@ def algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reesc
         # ---------------------------------------------------------
         # Fitness
         # ---------------------------------------------------------
-        resultado_fitness, hamming = funcaoFitnessReescala(populacao_atual, num_dias_mes, turno, nomes, farmaceuticos, auxiliares, escala_original_numerica, dias_resto_mes, cargo_troca)
+        resultado_fitness, hamming, alteracoes = funcaoFitnessReescala(populacao_atual, num_dias_mes, turno, nomes, farmaceuticos, auxiliares, escala_original_numerica, dias_resto_mes, cargo_troca)
 
         historico_fitness_todos.append(resultado_fitness.copy())
         historico_hamming.append(hamming.copy())
+        historico_alteracoes.append(alteracoes.copy())
         melhor_idx = np.argmax(resultado_fitness)  # Pega o índice da maior nota
         melhor_fitness_geracao = resultado_fitness[melhor_idx]
         melhor_individuo_geracao = populacao_atual[:, :, melhor_idx].copy()
@@ -97,4 +99,4 @@ def algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reesc
         if elitismo: populacao_atual[:, :, -1] = melhor_individuo_global
 
     return (populacao_atual, historico_individuos, historico_fitness, melhor_individuo_global, historico_selecionados_fitness, historico_selecionados_indices, historico_melhor_idx, melhor_geracao_global,
-            melhor_id_global, historico_fitness_todos, historico_hamming)
+            melhor_id_global, historico_fitness_todos, historico_hamming, historico_alteracoes)

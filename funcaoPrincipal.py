@@ -18,16 +18,16 @@ def funcaoPrincipal():
     turno = 1 #1 para diurno ou 2 para noturno
     # __________________________________________________________________________________________________________________
     # Parâmetros do algoritmo genético
-    qtde_individuos = 60
+    qtde_individuos = 50
     geracoes = 1500
 
     elitismo = True  # False para não manter o melhor indivíduo na próxima geração e True manter o melhor na próxima geração
 
-    selecao = 2 #1 para roleta; 2 para elitismo; 3 para torneio; 4 para Maximax e Maximin
+    selecao = 1 #1 para roleta; 2 para elitismo; 3 para torneio; 4 para Maximax e Maximin
     qtd_pais = 2
     tamanho_grupos_torneios = 0
 
-    cruzamento = 1 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 porcentagem de herança e ordem sorteadas (cortes verticais)
+    cruzamento = 3 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 percentagem de herança e ordem sorteadas (cortes verticais)
     qtd_blocos = 10
 
     mutacao = 2  # 1 bit flip em bloco sorteado a partir de uma linha; 2 bit flip em apenas um gene
@@ -39,7 +39,6 @@ def funcaoPrincipal():
     # usados apenas na reescala:
     dia_reescala = 12  # dia que tem que achar outro para substituir o funcionario abaixo
     funcionario = 'Enzo Ramos'  # nome do funcionario que irá sair
-    taxa_troca_ideal = 0.1  # taxa de troca ideal para o algoritmo genético - população inicial
 
     # __________________________________________________________________________________________________________________
     if tipo not in [1, 2]: raise ValueError("Deve ser 1 para escala ou 2 para reescala")
@@ -97,8 +96,8 @@ def funcaoPrincipal():
                 auxiliares = qtd_colaboradores_reescala
 
             (populacao_final, historico_individuos, historico_fitness, melhor_individuo_global, hist_sel_fit, hist_sel_idx, hist_melhor_idx,
-         geracao_campea, id_campeao, historico_fitness_todos, historico_hamming) = algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, nomes_lista, id_troca, num_dias_mes, cargo_troca, farmaceuticos, auxiliares, dias_resto_mes,
-                              escala_original_numerica, dia_reescala, taxa_troca_ideal , turno,
+         geracao_campea, id_campeao, historico_fitness_todos, historico_hamming, historico_alteracoes) = algoritmoGeneticoReescala(cargos_ok, matriz_para_reescalar, matriz_nao_reescalar, nomes, nomes_lista, id_troca, num_dias_mes, cargo_troca, farmaceuticos, auxiliares, dias_resto_mes,
+                              escala_original_numerica, dia_reescala, turno,
                               qtde_individuos, geracoes, elitismo, selecao, qtd_pais, tamanho_grupos_torneios, cruzamento, qtd_blocos, mutacao, probabilidade_mutacao)
 
             tempo_total = time.time() - tempo_inicio
@@ -111,7 +110,7 @@ def funcaoPrincipal():
                             hist_sel_fit, hist_sel_idx, hist_melhor_idx, geracao_campea, id_campeao,
                             historico_fitness_todos, nomes_lista, farmaceuticos, auxiliares, num_dias_mes, qtde_individuos)
 
-            graficoDispersaoHamming(historico_hamming, qtde_individuos)
+            graficoDispersaoHamming(historico_hamming, qtde_individuos, historico_alteracoes)
 
 if __name__ == "__main__":
     funcaoPrincipal()

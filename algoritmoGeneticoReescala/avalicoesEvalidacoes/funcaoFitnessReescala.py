@@ -8,6 +8,7 @@ def funcaoFitnessReescala(populacao, num_dias_mes, turno, nomes, farmaceuticos, 
     e penalizando a disrupção (mudanças em relação à escala original).
     """
     hamming = np.zeros(populacao.shape[2])
+    alteracoes = np.zeros(populacao.shape[2])
     avaliacaoFitness = np.zeros(populacao.shape[2])
     max_auxiliar = int(auxiliares // 2)
     min_auxiliar = 16 if turno == 1 else 12
@@ -109,12 +110,16 @@ def funcaoFitnessReescala(populacao, num_dias_mes, turno, nomes, farmaceuticos, 
         # ---------------------------------------------------------
         if escala_original_numerica is not None: # Conta quantos dias de trabalho/folga foram alterados no total
             dias_alterados = np.sum(individuo != escala_original_numerica)
+            troca_ideal = 2 #1 saiu e um entra
             colaboradores = farmaceuticos if cargo_troca == 1 else auxiliares
             total_celulas_mutaveis = dias_resto_mes * colaboradores
-            hamming_normalizado = dias_alterados / total_celulas_mutaveis
-            hamming[cont] = -hamming_normalizado
-            soma_temp -= hamming_normalizado
+            valor_hamming = -abs(dias_alterados - troca_ideal) / total_celulas_mutaveis
+
+            alteracoes[cont] = dias_alterados
+            hamming[cont] = valor_hamming
+
+            soma_temp += valor_hamming
 
         avaliacaoFitness[cont] = soma_temp
 
-    return avaliacaoFitness, hamming
+    return avaliacaoFitness, hamming, alteracoes

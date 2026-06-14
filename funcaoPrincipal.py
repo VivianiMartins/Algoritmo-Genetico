@@ -23,12 +23,12 @@ def funcaoPrincipal():
 
     elitismo = True  # False para não manter o melhor indivíduo na próxima geração e True manter o melhor na próxima geração
 
-    selecao = 4 #1 para roleta; 2 para elitismo; 3 para torneio; 4 para Maximax e Maximin
+    selecao = 3 #1 para roleta; 2 para elitismo; 3 para torneio; 4 para Maximax e Maximin
     qtd_pais = 2
-    tamanho_grupos_torneios = 0
+    tamanho_grupos_torneios = 5 #tamanho dos grupos para seleção por torneio (deve ser menor que a quantidade de indivíduos)
 
-    cruzamento = 1 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 percentagem de herança e ordem sorteadas (cortes verticais)
-    qtd_blocos = 25
+    cruzamento = 3 #1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 percentagem de herança e ordem sorteadas (cortes verticais)
+    qtd_blocos = 0
 
     mutacao = 2  # 1 bit flip em bloco sorteado a partir de uma linha; 2 bit flip em apenas um gene
     probabilidade_mutacao = 0.2 #probabilidade do indivíduo ser mutado

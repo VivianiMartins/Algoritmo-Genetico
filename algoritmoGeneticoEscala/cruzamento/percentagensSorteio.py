@@ -4,10 +4,10 @@ from algoritmoGeneticoEscala.avaliacoesEvalidacoes.validaSolucaoEscala import va
 
 def percentagensSorteio(selecionados, populacao, funcionarios, qtde_individuos, turno, farmaceuticos, auxiliares, num_dias_mes):
     """
-    Cruzamento por porcentagem de herança e ordem sorteadas - cortes verticais. Para cada filho gerado:
+    Cruzamento por percentagem de herança e ordem sorteadas - cortes verticais. Para cada filho gerado:
     1. Sorteia-se a ordem dos pais (Quem é o Pai A e quem é o Pai B).
-    2. Sorteia-se uma porcentagem.
-    3. O filho recebe a primeira porcentagem do Pai A e o restante do Pai B.
+    2. Sorteia-se uma percentagem.
+    3. O filho recebe a primeira percentagem do Pai A e o restante do Pai B.
     """
     individuos_selecionados = populacao[:, :, selecionados]
     num_pais_selecionados = individuos_selecionados.shape[2]

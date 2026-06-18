@@ -9,7 +9,7 @@ from selecao.torneio import torneio
 from selecao.maximaxMaximin import maximaxMaximin
 from algoritmoGeneticoEscala.cruzamento.blocos import blocos
 from algoritmoGeneticoEscala.cruzamento.xadrez import xadrez
-from algoritmoGeneticoEscala.cruzamento.porcentagenSorteio import percentagensSorteio
+from algoritmoGeneticoEscala.cruzamento.percentagensSorteio import percentagensSorteio
 from algoritmoGeneticoEscala.mutacao.bitFlipBloco import bitFlipBloco
 from algoritmoGeneticoEscala.mutacao.bitFlipGene import bitFlipGene
 

@@ -49,9 +49,13 @@ def recriarGrafico(caminho_arquivo, salvar=False):
     #plt.scatter(geracao_campea, nota_campea, color='gold', edgecolor='black', marker='*', s=350, zorder=10, label=f'Melhor Global (Gen {geracao_campea}: {nota_campea:.2f})')
 
     # Configurações visuais do gráfico
-    plt.title('Distribuição e Evolução do Fitness Recriada', fontsize=14, fontweight='bold')
-    plt.xlabel('Gerações', fontsize=12)
-    plt.ylabel('Pontuação (Fitness)', fontsize=12)
+    #plt.title('Distribuição e Evolução do Fitness', fontsize=14, fontweight='bold')
+    #plt.xlabel('Gerações', fontsize=12)
+    #plt.ylabel('Pontuação (Fitness)', fontsize=12)
+    plt.title('Distribuição e Evolução do Fitness', fontsize=12, fontweight='bold')
+    plt.xlabel('Gerações', fontsize=10)
+    plt.ylabel('Pontuação (Fitness)', fontsize=10)
+
     plt.legend(loc='lower right', framealpha=0.9)
     plt.ticklabel_format(style='plain', axis='y')
     plt.gca().xaxis.set_major_locator(ticker.MaxNLocator(integer=True, nbins=20))
@@ -63,7 +67,8 @@ def recriarGrafico(caminho_arquivo, salvar=False):
     plt.tight_layout()
 
     if salvar:
-        nome_imagem = caminho_arquivo.split('.')[0] + '_grafico_recriado.png'
+        nome_imagem = caminho_arquivo.split('.')[0] + '_grafico_recriado.pdf'
+        #nome_imagem = caminho_arquivo.split('.')[0] + '_grafico_recriado.png'
         plt.savefig(nome_imagem, dpi=300)
         print(f">> Gráfico salvo com sucesso como: {nome_imagem}")
 

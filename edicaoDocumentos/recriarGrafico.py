@@ -52,9 +52,11 @@ def recriarGrafico(caminho_arquivo, salvar=False):
     #plt.title('Distribuição e Evolução do Fitness', fontsize=14, fontweight='bold')
     #plt.xlabel('Gerações', fontsize=12)
     #plt.ylabel('Pontuação (Fitness)', fontsize=12)
-    plt.title('Distribuição e Evolução do Fitness', fontsize=12, fontweight='bold')
+    #plt.title('Distribuição e Evolução do Fitness', fontsize=12, fontweight='bold')
+    plt.title('Distribuição e Evolução das penalizações', fontsize=12, fontweight='bold')
     plt.xlabel('Gerações', fontsize=10)
-    plt.ylabel('Pontuação (Fitness)', fontsize=10)
+    #plt.ylabel('Pontuação (Fitness)', fontsize=10)
+    plt.ylabel('Penalizações', fontsize=10)
 
     plt.legend(loc='lower right', framealpha=0.9)
     plt.ticklabel_format(style='plain', axis='y')

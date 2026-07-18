@@ -20,47 +20,49 @@ def recriarGrafico(caminho_arquivo, salvar=False):
 
     geracoes_eixo_x = list(range(1, len(df) + 1))
 
-    melhores_por_geracao = df.max(axis=1).values
+    #melhores_por_geracao = df.max(axis=1).values
     medias_geracao = df.mean(axis=1).values
 
-    nota_campea = np.max(melhores_por_geracao)
-    geracao_campea = np.argmax(melhores_por_geracao) + 1  # +1 porque o índice começa em 0
+    #nota_campea = np.max(melhores_por_geracao)
+    #geracao_campea = np.argmax(melhores_por_geracao) + 1  # +1 porque o índice começa em 0
 
     # =========================================================================
     # Construção do Gráfico
     # =========================================================================
-    plt.figure(figsize=(14, 7))
+    plt.figure(figsize=(14,7))
 
     # 1. Plota a dispersão de todos os indivíduos (bolinhas cinzas)
     for i, geracao_x in enumerate(geracoes_eixo_x):
         notas_geracao = df.iloc[i].values
         x_vals = [geracao_x] * len(notas_geracao)
-        plt.scatter(x_vals, notas_geracao, color='gray', alpha=0.5, edgecolor='black', s=25, zorder=2)
+        plt.scatter(x_vals, notas_geracao, color='gray', alpha=0.5, edgecolor='black', s=60, zorder=2)
 
     # 2. Plota a Média da População
-    plt.plot(geracoes_eixo_x, medias_geracao, color='red', linestyle='--', linewidth=2, label='Média da População',
-             zorder=3)
+    plt.plot(geracoes_eixo_x, medias_geracao, color='red', linestyle='-', linewidth=1.5, label='Média da População',
+             zorder=4)
 
     # 3. Plota o Melhor da Geração
-    plt.plot(geracoes_eixo_x, melhores_por_geracao, color='#4472C4', marker='o', markersize=4, linestyle='-',
-             linewidth=2, label='Melhor da Geração', zorder=4)
+    #plt.plot(geracoes_eixo_x, melhores_por_geracao, color='#4472C4', marker='o', markersize=6, linestyle='none',
+    #         linewidth=0, label='Melhor da Geração', zorder=3)
 
     # 4. Destaque para o Melhor Global (Estrela Dourada)
     #plt.scatter(geracao_campea, nota_campea, color='gold', edgecolor='black', marker='*', s=350, zorder=10, label=f'Melhor Global (Gen {geracao_campea}: {nota_campea:.2f})')
 
     # Configurações visuais do gráfico
-    #plt.title('Distribuição e Evolução do Fitness', fontsize=14, fontweight='bold')
-    #plt.xlabel('Gerações', fontsize=12)
-    #plt.ylabel('Pontuação (Fitness)', fontsize=12)
-    #plt.title('Distribuição e Evolução do Fitness', fontsize=12, fontweight='bold')
-    plt.title('Distribuição e Evolução das penalizações', fontsize=12, fontweight='bold')
-    plt.xlabel('Gerações', fontsize=10)
-    #plt.ylabel('Pontuação (Fitness)', fontsize=10)
-    plt.ylabel('Penalizações', fontsize=10)
+    #plt.title('Distribuição e Evolução do Fitness', fontsize=22, fontweight='bold')
+    #plt.title('Distribuição e Evolução das penalizações', fontsize=22, fontweight='bold')
+    plt.xlabel('Gerações', fontsize=22)
+    #plt.ylabel('Pontuação (Fitness)', fontsize=22)
+    #plt.ylabel('Penalizações', fontsize=22)
+    plt.ylabel('Alterações', fontsize=22)
 
-    plt.legend(loc='lower right', framealpha=0.9)
+    plt.tick_params(axis='both', which='major', labelsize=22)
+
+    plt.legend(loc='upper left', framealpha=0.9, fontsize=22)
     plt.ticklabel_format(style='plain', axis='y')
-    plt.gca().xaxis.set_major_locator(ticker.MaxNLocator(integer=True, nbins=20))
+    #plt.gca().xaxis.set_major_locator(ticker.MaxNLocator(integer=True, nbins=22))
+    plt.gca().xaxis.set_major_locator(ticker.MultipleLocator(150))
+    plt.gca().yaxis.set_major_locator(ticker.MaxNLocator(nbins=10))
 
     y_min, y_max = plt.ylim()
     plt.ylim(y_min - (y_max - y_min) * 0.05, y_max + (y_max - y_min) * 0.1)

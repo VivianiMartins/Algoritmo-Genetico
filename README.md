@@ -7,8 +7,8 @@ Este repositório contém a implementação do trabalho de conclusão de curso (
 **Objetivo:** Desenvolver um sistema baseado em algoritmos genéticos para gerar e reajustar escalas de trabalho de funcionários em estabelecimentos de saúde (farmácias), considerando:
 - Dois turnos de trabalho: Diurno e Noturno.
 - Dois cargos: Farmacêutico e Auxiliar.
-- Licenças e férias dentro da legislação trabalhista
-- Regras de alternância e distribuição equitativa
+- Licenças e férias dentro da legislação trabalhista.
+- Regras de alternância e distribuição equitativa.
 
 O projeto oferece duas funcionalidades principais:
 1. **Geração de Escala:** criar uma nova escala do zero para um turno específico.
@@ -52,23 +52,25 @@ tipo = 2
 # turno: 1 = diurno, 2 = noturno
 turno = 1
 
-# Parâmetros do AG
+# Parâmetros do algoritmo genético
 qtde_individuos = 50
 geracoes = 1500
+
+# False para não manter o melhor indivíduo na próxima geração e True manter o melhor na próxima geração
 elitismo = True
 
-# seleção: 1=roleta, 2=elitista, 3=torneio, 4=maximax/maximin
+# Seleção: 1 para roleta; 2 para elitismo; 3 para torneio; 4 para Maximax e Maximin
 selecao = 2
 qtd_pais = 2
-tamanho_grupos_torneios = 0
+tamanho_grupos_torneios = 0 #tamanho dos grupos para seleção por torneio (deve ser menor que a quantidade de indivíduos)
 
-# cruzamento: 1=blocos, 2=xadrez, 3=percentagem/ordem sorteada
+# Cruzamento: 1 por blocos (cortes horizontais); 2 xadrez(cortes verticais e horizontais); 3 percentagem de herança e ordem sorteadas (cortes verticais)
 cruzamento = 1
-qtd_blocos = 45
+qtd_blocos = 45 #quantidade de blocos para o cruzamento por blocos (deve ser menor ou igual a quantidade de indivíduos)
 
-# mutação: 1=bit-flip bloco, 2=bit-flip gene
+# Mutação: 1 para bit flip em bloco sorteado a partir de uma linha; 2 para bit flip em apenas um gene
 mutacao = 2
-probabilidade_mutacao = 0.2
+probabilidade_mutacao = 0.2  #probabilidade do indivíduo ser mutado
 ````
 
 Parâmetros específicos:
@@ -129,23 +131,29 @@ Principais arquivos e localização
   - algoritmoGeneticoEscala.py, geraPopulacaoInicial.py, listaFuncionarios.csv
   - Subpastas: cruzamento/, mutacao/, avaliacoesEvalidacoes/
 - algoritmoGeneticoReescala/ — implementação para reescala:
-  - algoritmoGeneticoReescala.py, melhor_escala_ag.xlsx
+  - algoritmoGeneticoReescala.py, melhor_escala_ag.xlsx, geraPopulacaoInicialReescala.py, extrairCorteReescalar.py
   - Subpastas equivalentes às do modo escala.
 - edicaoDocumentos/ — utilitários:
-  - transformarEntradaDoisTurnos.py, transformarEntradaReescala.py, salvarExcel.py, resultadosTeste.py, graficoDispersaoHamming.py
+  - encontrarFuncionario.py, transformarEntradaDoisTurnos.py, transformarEntradaReescala.py, salvarExcel.py, resultadosTeste.py, graficoDispersaoHamming.py, plotarMultiplosTestes.py, recriarGrafico.py
 - selecao/ — implementações de métodos de seleção (roleta, torneio, elitista, etc).
-
+- avaliacoesEvalidacoes/ - impletações para ambos cenários
+- Testes/ - pasta contendo teste para TCC
+- Trabalho_de_Conclusão_de_Curso___Viviani_Martins_dos_Santos.pdf - texto resultante da impletmentação e pesquisa.
 ---
 Saídas geradas
 ----------
-- Arquivos Excel:
-  - 1_populacao_final.xlsx — população final (todas as soluções).
-  - 2_historico_melhores_individuos_geracao.xlsx — melhores por geração.
-  - 3_melhor_escala.xlsx — melhor indivíduo (escala).
-  - 5_historico_todos_fitness.xlsx — histórico de fitness (todas as gerações e indivíduos).
-  - Reescala: 7_historico_todos_hamming.xlsx, 9_historico_todas_alteracoes.xlsx.
+- Arquivos Excel: 
+  - 0_populacao_inicial.xlsx — população final (primeira população gerada).
+  - 1_populacao_final.xlsx — população final (última população gerada).
+  - 2_historico_melhores_individuos_geracao.xlsx — indivíduo com maior resultado da fitness por geração.
+  - 3_melhor_escala.xlsx — indivíduo com maior resultado da fitness.
+  - 5_historico_todos_fitness.xlsx — histórico de resultados da fitness por indivíduo em cada geração.
+  * Reescala: 
+    - 7_historico_todos_hamming.xlsx — histórico dos cálculos de hamming dos indivíduos ao longo das gerações.
+    - 9_historico_todas_alteracoes.xlsx. — histórico das alterações dos indivíduos ao longo das gerações.
 - Gráficos (PNG):
-  - 4_grafico_individuos_selecionados.png
-  - 6_grafico_dispersao_populacao.png
-  - 8_grafico_dispersao_hamming.png
-  - 10_grafico_dispersao_alterações.png
+  - 4_grafico_individuos_selecionados.png — gráfico dos indivíduos selecionados ao longo das gerações.
+  - 6_grafico_dispersao_populacao.png — gráfico de dispersão dos indivíduos ao longo das gerações.
+  * Reescala:
+    - 8_grafico_dispersao_hamming.png — gráfico de dispersão dos cálculos de hamming dos indivíduos ao longo das gerações.
+    - 10_grafico_dispersao_alterações.png — gráfico de dispersão das alterações dos indivíduos ao longo das gerações.
